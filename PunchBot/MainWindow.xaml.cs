@@ -13,6 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Microsoft.Windows.Controls;
+using System.Windows.Controls.DataVisualization.Charting;
 
 namespace PunchBot
 {
@@ -21,28 +22,52 @@ namespace PunchBot
     /// </summary>
     public partial class MainWindow : Window
     {
-        public List<KeyValuePair<string, int>> ValueList { get; private set; }
-        public PointCollection Points = new PointCollection(new Point[] { new Point(1, 1), new Point(2, 2) });
-        private Input data;
-
         public MainWindow()
         {
             data = new Input();
             InitializeComponent();
-            this.DataContext = data;
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            //PointCollection points = new PointCollection(new Point[] { new Point(1, 1), new Point(2, 9) });
-            
-        }
 
         private void button1_Click(object sender, RoutedEventArgs e)
         {
-            this.data.Add(new KeyValuePair<string, int>("XXX", 27));
+            // Create OpenFileDialog 
+            Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
+
+            // Set filter for file extension and default file extension 
+            dlg.DefaultExt = ".txt";
+            dlg.Filter = "Text documents (.txt)|*.txt";
+
+            // Display OpenFileDialog by calling ShowDialog method 
+            Nullable<bool> result = dlg.ShowDialog();
+
+            // Get the selected file name and display in a TextBox 
+            if (result == true)
+            {
+                string filename = dlg.FileName;
+                string fileText = System.IO.File.ReadAllText(filename);
+
+                textBox1.Text = fileText;
+
+                ((LineSeries)lineChart.Series[0]).ItemsSource = ConvertTextToLine(fileText);
+            } 
         }
 
+        private KeyValuePair<int, int>[]  ConvertTextToLine(string text)
+        {
+            
+            string[] points = text.Split(new string[] {"\n", "\r\n"}, StringSplitOptions.RemoveEmptyEntries);
+
+            KeyValuePair<int, int>[] pointsKVP = new KeyValuePair<int, int>[points.Length];
+            for (int i = 0; i < points.Length; i++)
+            {
+                pointsKVP[i] = new KeyValuePair<int, int>(i, Convert.ToInt32(points[i]));
+            }
+
+            return pointsKVP;
+        }
+
+  
 
 
     }
