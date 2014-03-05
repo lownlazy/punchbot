@@ -24,8 +24,12 @@ namespace PunchBot
     {
         public MainWindow()
         {
-            data = new Input();
+            //data = new Input();
             InitializeComponent();
+
+            //var series = new LineSeries();
+            //series.Title = "fred";
+            //lineChart.Series.Add(series);
         }
 
 
@@ -49,7 +53,7 @@ namespace PunchBot
 
                 textBox1.Text = fileText;
 
-                ((LineSeries)lineChart.Series[0]).ItemsSource = ConvertTextToLine(fileText);
+                ((LineSeries)lineChart.Series[1]).ItemsSource = ConvertTextToLine(fileText);
             } 
         }
 
