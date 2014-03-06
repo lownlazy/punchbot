@@ -12,7 +12,7 @@
         </Grid.RowDefinitions>
 
         <chartingToolkit:Chart  Name="lineChart" VerticalAlignment="Top" Margin="0,0,0,0" Height="559"  >
-            <chartingToolkit:LineSeries Title="Strike 1"  DependentValuePath="Value" IndependentValuePath="Key" ItemsSource="{Binding Points }" IsSelectionEnabled="True"/>
+            <chartingToolkit:LineSeries Title="Strike 1" AnimationSequence="FirstToLast"  DependentValuePath="Value" IndependentValuePath="Key" ItemsSource="{Binding Points }" IsSelectionEnabled="True"/>
             <chartingToolkit:LineSeries Title="Strike 2"  DependentValuePath="Value" IndependentValuePath="Key" ItemsSource="{Binding Points }" IsSelectionEnabled="True"/>
             <chartingToolkit:LineSeries Title="Strike 3"  DependentValuePath="Value" IndependentValuePath="Key" ItemsSource="{Binding Points }" IsSelectionEnabled="True" Margin="0,-30,0,0"/>
         </chartingToolkit:Chart>
@@ -21,7 +21,7 @@
         <StackPanel Grid.Row="1" Orientation="Horizontal"  >
             <Button Content="load sample" Height="23" HorizontalAlignment="Left"  Name="button1" VerticalAlignment="Top" Width="75" Click="button1_Click" />
             <TextBox Name="textBox1" HorizontalAlignment="Left" Height="92" TextWrapping="Wrap" VerticalAlignment="Top" Width="112" />
-            <TextBox Name="textBox2" HorizontalAlignment="Left" Height="92" TextWrapping="Wrap" VerticalAlignment="Top" Width="109" />
+            <Button Content="Read Data" Height="23" HorizontalAlignment="Left"  Name="readSerialButton" VerticalAlignment="Top" Width="75" Click="readSerialButton_Click"  />
         </StackPanel>
     </Grid>
 </Window>

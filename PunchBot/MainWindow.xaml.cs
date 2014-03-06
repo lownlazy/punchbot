@@ -14,6 +14,8 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Microsoft.Windows.Controls;
 using System.Windows.Controls.DataVisualization.Charting;
+using System.IO.Ports;
+using System.Windows.Threading;
 
 namespace PunchBot
 {
@@ -25,11 +27,13 @@ namespace PunchBot
         public static string comportnum;
         public delegate void NoArgDelegate();
         public static SerialPort serialX;
+        public DispatcherTimer dispatcherTimer;
 
         public MainWindow()
         {
-            //data = new Input();
             InitializeComponent();
+            initTimer();
+            comportnum = "COM" + 3; 
 
             //var series = new LineSeries();
             //series.Title = "fred";
@@ -69,14 +73,57 @@ namespace PunchBot
             KeyValuePair<int, int>[] pointsKVP = new KeyValuePair<int, int>[points.Length];
             for (int i = 0; i < points.Length; i++)
             {
+                if (points[i] == "end") break;
                 pointsKVP[i] = new KeyValuePair<int, int>(i, Convert.ToInt32(points[i]));
             }
 
             return pointsKVP;
         }
 
-  
+        private void readSerialButton_Click(object sender, RoutedEventArgs e)
+        {
+            textBox1.Text = "";
 
+            if (serialX == null)
+            {
+                serialX = new SerialPort(comportnum);
+                serialX.BaudRate = 9600;
+
+                try
+                {
+                    serialX.Open();
+
+                    serialX.DataReceived += new SerialDataReceivedEventHandler(serialX_DataReceived);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
+            }
+        }
+
+
+        void serialX_DataReceived(object sender, SerialDataReceivedEventArgs e)
+        {
+            String comdata;
+            comdata = serialX.ReadLine();
+            Dispatcher.Invoke((Action)(() => textBox1.Text += comdata + "\n"));
+
+            dispatcherTimer.Start();
+        }
+
+        void initTimer()
+        {
+            dispatcherTimer = new System.Windows.Threading.DispatcherTimer();
+            dispatcherTimer.Tick += new EventHandler(dispatcherTimer_Tick);
+            dispatcherTimer.Interval = new TimeSpan(0, 0, 1);
+        }
+
+        private void dispatcherTimer_Tick(object sender, EventArgs e)
+        {
+            ((LineSeries)lineChart.Series[1]).ItemsSource = ConvertTextToLine(textBox1.Text);
+        }
+        
 
     }
 }
