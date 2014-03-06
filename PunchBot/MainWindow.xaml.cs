@@ -22,6 +22,10 @@ namespace PunchBot
     /// </summary>
     public partial class MainWindow : Window
     {
+        public static string comportnum;
+        public delegate void NoArgDelegate();
+        public static SerialPort serialX;
+
         public MainWindow()
         {
             data = new Input();
