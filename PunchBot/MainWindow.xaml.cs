@@ -19,41 +19,84 @@ using System.Windows.Threading;
 
 namespace PunchBot
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
-        public static string comportnum;
-        public delegate void NoArgDelegate();
-        public static SerialPort serialX;
-        public DispatcherTimer dispatcherTimer;
+        private SerialPort Serial;
+        private DispatcherTimer dispatcherTimer;
+        private String SerialStream = "";
 
         public MainWindow()
         {
             InitializeComponent();
             initTimer();
-            comportnum = "COM" + 3; 
+            initSerialRead("COM3", 9600);
+        }
 
-            //var series = new LineSeries();
-            //series.Title = "fred";
-            //lineChart.Series.Add(series);
+        //initialise -----------------------------------------
+
+        private void initSerialRead(string ComPort, int BaudRate)
+        {
+            if (Serial == null)
+            {
+                Serial = new SerialPort(ComPort);
+                Serial.BaudRate = 9600;
+
+                try
+                {
+                    Serial.Open();
+                    Serial.DataReceived += new SerialDataReceivedEventHandler(SerialDataHandler);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
+            }
+        }
+        
+        private void initTimer()
+        {
+            dispatcherTimer = new System.Windows.Threading.DispatcherTimer();
+            dispatcherTimer.Tick += new EventHandler(TimerHandler);
+            dispatcherTimer.Interval = new TimeSpan(0, 0, 1);
         }
 
 
+        //Event Handlers -------------------------------------------------
+
         private void button1_Click(object sender, RoutedEventArgs e)
         {
-            // Create OpenFileDialog 
+            OpenFile();
+        }
+
+        private void TimerHandler(object sender, EventArgs e)
+        {
+            DrawLine(textBox1.Text);
+        }
+
+        void SerialDataHandler(object sender, SerialDataReceivedEventArgs e)
+        {
+            String comData = Serial.ReadLine();
+            Dispatcher.Invoke((Action)(() => textBox1.Text += comData + "\n"));
+
+            if (comData.IndexOf("end") > 0)
+            {
+                //DrawLine(SerialStream);
+                //SerialStream = "";
+                textBox1.Text += "xx";
+            }
+        }
+
+        //helper methods --------------------------------------------
+        
+        private void OpenFile()
+        {
             Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
 
-            // Set filter for file extension and default file extension 
             dlg.DefaultExt = ".txt";
             dlg.Filter = "Text documents (.txt)|*.txt";
 
-            // Display OpenFileDialog by calling ShowDialog method 
             Nullable<bool> result = dlg.ShowDialog();
 
-            // Get the selected file name and display in a TextBox 
             if (result == true)
             {
                 string filename = dlg.FileName;
@@ -61,14 +104,19 @@ namespace PunchBot
 
                 textBox1.Text = fileText;
 
-                ((LineSeries)lineChart.Series[1]).ItemsSource = ConvertTextToLine(fileText);
-            } 
+                DrawLine(textBox1.Text);
+            }
         }
 
-        private KeyValuePair<int, int>[]  ConvertTextToLine(string text)
+        private void DrawLine(string text)
         {
-            
-            string[] points = text.Split(new string[] {"\n", "\r\n"}, StringSplitOptions.RemoveEmptyEntries);
+            ((LineSeries)lineChart.Series[0]).ItemsSource = ConvertTextToLine(text);
+        }
+
+        private KeyValuePair<int, int>[] ConvertTextToLine(string text)
+        {
+
+            string[] points = text.Split(new string[] { "\n", "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
 
             KeyValuePair<int, int>[] pointsKVP = new KeyValuePair<int, int>[points.Length];
             for (int i = 0; i < points.Length; i++)
@@ -79,51 +127,5 @@ namespace PunchBot
 
             return pointsKVP;
         }
-
-        private void readSerialButton_Click(object sender, RoutedEventArgs e)
-        {
-            textBox1.Text = "";
-
-            if (serialX == null)
-            {
-                serialX = new SerialPort(comportnum);
-                serialX.BaudRate = 9600;
-
-                try
-                {
-                    serialX.Open();
-
-                    serialX.DataReceived += new SerialDataReceivedEventHandler(serialX_DataReceived);
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message);
-                }
-            }
-        }
-
-
-        void serialX_DataReceived(object sender, SerialDataReceivedEventArgs e)
-        {
-            String comdata;
-            comdata = serialX.ReadLine();
-            Dispatcher.Invoke((Action)(() => textBox1.Text += comdata + "\n"));
-
-            dispatcherTimer.Start();
-        }
-
-        void initTimer()
-        {
-            dispatcherTimer = new System.Windows.Threading.DispatcherTimer();
-            dispatcherTimer.Tick += new EventHandler(dispatcherTimer_Tick);
-            dispatcherTimer.Interval = new TimeSpan(0, 0, 1);
-        }
-
-        private void dispatcherTimer_Tick(object sender, EventArgs e)
-        {
-            ((LineSeries)lineChart.Series[1]).ItemsSource = ConvertTextToLine(textBox1.Text);
-        }
-        
-
     }
 }
