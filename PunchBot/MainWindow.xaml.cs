@@ -1,36 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using Microsoft.Windows.Controls;
 using System.Windows.Controls.DataVisualization.Charting;
 using System.IO.Ports;
-using System.Windows.Threading;
 
 namespace PunchBot
 {
     public partial class MainWindow : Window
     {
         private SerialPort Serial;
-        private DispatcherTimer dispatcherTimer;
         private String SerialStream = "";
 
         public MainWindow()
         {
             InitializeComponent();
-            initTimer();
-            initSerialRead("COM3", 9600);
+
+            string comPort = Properties.Settings.Default.Com;
+            int baud = Properties.Settings.Default.Baud;
+
+            initSerialRead(comPort, baud);
+
         }
+
+
 
         //initialise -----------------------------------------
 
@@ -39,7 +31,7 @@ namespace PunchBot
             if (Serial == null)
             {
                 Serial = new SerialPort(ComPort);
-                Serial.BaudRate = 9600;
+                Serial.BaudRate = BaudRate;
 
                 try
                 {
@@ -53,13 +45,6 @@ namespace PunchBot
             }
         }
         
-        private void initTimer()
-        {
-            dispatcherTimer = new System.Windows.Threading.DispatcherTimer();
-            dispatcherTimer.Tick += new EventHandler(TimerHandler);
-            dispatcherTimer.Interval = new TimeSpan(0, 0, 1);
-        }
-
 
         //Event Handlers -------------------------------------------------
 
@@ -68,22 +53,30 @@ namespace PunchBot
             OpenFile();
         }
 
-        private void TimerHandler(object sender, EventArgs e)
-        {
-            DrawLine(textBox1.Text);
-        }
 
-        void SerialDataHandler(object sender, SerialDataReceivedEventArgs e)
+        private void SerialDataHandler(object sender, SerialDataReceivedEventArgs e)
         {
             String comData = Serial.ReadLine();
-            Dispatcher.Invoke((Action)(() => textBox1.Text += comData + "\n"));
+            
+            this.Dispatcher.Invoke((Action)(() =>
+             {
+                 if (comData.IndexOf("reset") > -1)
+                 {
+                     DrawLine("");
+                     SerialStream = "";
+                     textBox1.Text = "reset";
+                 }
+                 else if (comData.IndexOf("end") > -1)
+                {
+                    DrawLine(SerialStream);
+                    textBox1.Text = SerialStream;
+                }
+                else
+                {
+                    SerialStream += comData + "\n";
+                }
+          }));
 
-            if (comData.IndexOf("end") > 0)
-            {
-                //DrawLine(SerialStream);
-                //SerialStream = "";
-                textBox1.Text += "xx";
-            }
         }
 
         //helper methods --------------------------------------------
@@ -108,6 +101,7 @@ namespace PunchBot
             }
         }
 
+
         private void DrawLine(string text)
         {
             ((LineSeries)lineChart.Series[0]).ItemsSource = ConvertTextToLine(text);
@@ -121,8 +115,16 @@ namespace PunchBot
             KeyValuePair<int, int>[] pointsKVP = new KeyValuePair<int, int>[points.Length];
             for (int i = 0; i < points.Length; i++)
             {
-                if (points[i] == "end") break;
-                pointsKVP[i] = new KeyValuePair<int, int>(i, Convert.ToInt32(points[i]));
+                try
+                {
+                    var value = points[i];
+                    //if (value == "end" || value == "reset") continue;
+                    pointsKVP[i] = new KeyValuePair<int, int>(i, Convert.ToInt32(points[i]));
+                }
+                catch(Exception ex)
+                {
+                    continue;
+                }
             }
 
             return pointsKVP;
