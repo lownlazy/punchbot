@@ -15,7 +15,7 @@ using System.Windows.Shapes;
 using Microsoft.Windows.Controls;
 using System.Windows.Controls.DataVisualization.Charting;
 
-namespace PunchBot
+namespace PunchBot.Capture
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
