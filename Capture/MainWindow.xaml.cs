@@ -1,51 +1,95 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using Microsoft.Windows.Controls;
 using System.Windows.Controls.DataVisualization.Charting;
+using System.IO.Ports;
 
 namespace PunchBot.Capture
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
+        private SerialPort Serial;
+        private String SerialStream = "";
+
         public MainWindow()
         {
-            //data = new Input();
             InitializeComponent();
 
-            //var series = new LineSeries();
-            //series.Title = "fred";
-            //lineChart.Series.Add(series);
+            string comPort = Properties.Settings.Default.Com;
+            int baud = Properties.Settings.Default.Baud;
+
+            initSerialRead(comPort, baud);
+
         }
 
 
+
+        //initialise -----------------------------------------
+
+        private void initSerialRead(string ComPort, int BaudRate)
+        {
+            if (Serial == null)
+            {
+                Serial = new SerialPort(ComPort);
+                Serial.BaudRate = BaudRate;
+
+                try
+                {
+                    Serial.Open();
+                    Serial.DataReceived += new SerialDataReceivedEventHandler(SerialDataHandler);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
+            }
+        }
+        
+
+        //Event Handlers -------------------------------------------------
+
         private void button1_Click(object sender, RoutedEventArgs e)
         {
-            // Create OpenFileDialog 
+            OpenFile();
+        }
+
+
+        private void SerialDataHandler(object sender, SerialDataReceivedEventArgs e)
+        {
+            String comData = Serial.ReadLine();
+            
+            this.Dispatcher.Invoke((Action)(() =>
+             {
+                 if (comData.IndexOf("reset") > -1)
+                 {
+                     DrawLine("");
+                     SerialStream = "";
+                     textBox1.Text = "reset";
+                 }
+                 else if (comData.IndexOf("end") > -1)
+                {
+                    DrawLine(SerialStream);
+                    textBox1.Text = SerialStream;
+                }
+                else
+                {
+                    SerialStream += comData + "\n";
+                }
+          }));
+
+        }
+
+        //helper methods --------------------------------------------
+        
+        private void OpenFile()
+        {
             Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
 
-            // Set filter for file extension and default file extension 
             dlg.DefaultExt = ".txt";
             dlg.Filter = "Text documents (.txt)|*.txt";
 
-            // Display OpenFileDialog by calling ShowDialog method 
             Nullable<bool> result = dlg.ShowDialog();
 
-            // Get the selected file name and display in a TextBox 
             if (result == true)
             {
                 string filename = dlg.FileName;
@@ -53,26 +97,37 @@ namespace PunchBot.Capture
 
                 textBox1.Text = fileText;
 
-                ((LineSeries)lineChart.Series[1]).ItemsSource = ConvertTextToLine(fileText);
-            } 
+                DrawLine(textBox1.Text);
+            }
         }
 
-        private KeyValuePair<int, int>[]  ConvertTextToLine(string text)
+
+        private void DrawLine(string text)
         {
-            
-            string[] points = text.Split(new string[] {"\n", "\r\n"}, StringSplitOptions.RemoveEmptyEntries);
+            ((LineSeries)lineChart.Series[0]).ItemsSource = ConvertTextToLine(text);
+        }
+
+        private KeyValuePair<int, int>[] ConvertTextToLine(string text)
+        {
+
+            string[] points = text.Split(new string[] { "\n", "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
 
             KeyValuePair<int, int>[] pointsKVP = new KeyValuePair<int, int>[points.Length];
             for (int i = 0; i < points.Length; i++)
             {
-                pointsKVP[i] = new KeyValuePair<int, int>(i, Convert.ToInt32(points[i]));
+                try
+                {
+                    var value = points[i];
+                    //if (value == "end" || value == "reset") continue;
+                    pointsKVP[i] = new KeyValuePair<int, int>(i, Convert.ToInt32(points[i]));
+                }
+                catch(Exception ex)
+                {
+                    continue;
+                }
             }
 
             return pointsKVP;
         }
-
-  
-
-
     }
 }

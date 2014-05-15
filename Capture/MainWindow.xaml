@@ -7,21 +7,21 @@
 
     <Grid >
         <Grid.RowDefinitions>
-            <RowDefinition Height="560" />
+            <RowDefinition Height="550" />
+            <RowDefinition Height="auto"  />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
         <chartingToolkit:Chart  Name="lineChart" VerticalAlignment="Top" Margin="0,0,0,0" Height="559"  >
-            <chartingToolkit:LineSeries Title="Strike 1"  DependentValuePath="Value" IndependentValuePath="Key" ItemsSource="{Binding Points }" IsSelectionEnabled="True"/>
-            <chartingToolkit:LineSeries Title="Strike 2"  DependentValuePath="Value" IndependentValuePath="Key" ItemsSource="{Binding Points }" IsSelectionEnabled="True"/>
-            <chartingToolkit:LineSeries Title="Strike 3"  DependentValuePath="Value" IndependentValuePath="Key" ItemsSource="{Binding Points }" IsSelectionEnabled="True" Margin="0,-30,0,0"/>
+            <chartingToolkit:LineSeries Title="1" AnimationSequence="FirstToLast"  DependentValuePath="Value" IndependentValuePath="Key" ItemsSource="{Binding Points }" IsSelectionEnabled="True"/>
         </chartingToolkit:Chart>
 
-        
-        <StackPanel Grid.Row="1" Orientation="Horizontal"  >
-            <Button Content="load sample" Height="23" HorizontalAlignment="Left"  Name="button1" VerticalAlignment="Top" Width="75" Click="button1_Click" />
-            <TextBox Name="textBox1" HorizontalAlignment="Left" Height="92" TextWrapping="Wrap" VerticalAlignment="Top" Width="112" />
-            <TextBox Name="textBox2" HorizontalAlignment="Left" Height="92" TextWrapping="Wrap" VerticalAlignment="Top" Width="109" />
+        <StackPanel Grid.Row="1" Orientation="Horizontal"   >
+            <Button Content="Load Sample" Height="23" HorizontalAlignment="Left" Margin="5" x:Name="button1" VerticalAlignment="Top" Width="75" Click="button1_Click" />
+        </StackPanel>
+
+        <StackPanel Grid.Row="2" Orientation="Horizontal"  >
+            <TextBox x:Name="textBox1" HorizontalAlignment="Left" Height="76" TextWrapping="Wrap" VerticalAlignment="Top" Width="294" />
         </StackPanel>
     </Grid>
 </Window>
