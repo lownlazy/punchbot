@@ -20,6 +20,8 @@ namespace PunchBot.Capture
 
             initSerialRead(comPort, baud);
 
+     
+
         }
 
 
@@ -95,16 +97,30 @@ namespace PunchBot.Capture
                 string filename = dlg.FileName;
                 string fileText = System.IO.File.ReadAllText(filename);
 
-                textBox1.Text = fileText;
-
-                DrawLine(textBox1.Text);
+                if (textBox1.Text == "")
+                {
+                    textBox1.Text = fileText;
+                    DrawLine(textBox1.Text);
+                }
+                else if (textBox2.Text == "")
+                {
+                    textBox2.Text = fileText;
+                    DrawLine(textBox2.Text);
+                }
             }
         }
 
 
         private void DrawLine(string text)
         {
-            ((LineSeries)lineChart.Series[0]).ItemsSource = ConvertTextToLine(text);
+            LineSeries lineSeries1 = new LineSeries();
+            lineSeries1.Title = "Title";
+            lineSeries1.DependentValuePath = "Value";
+            lineSeries1.IndependentValuePath = "Key";
+            lineSeries1.ItemsSource = ConvertTextToLine(text);
+            lineChart.Series.Add(lineSeries1);
+
+            //((LineSeries)lineChart.Series[0]).ItemsSource = ConvertTextToLine(text);
         }
 
         private KeyValuePair<int, int>[] ConvertTextToLine(string text)
