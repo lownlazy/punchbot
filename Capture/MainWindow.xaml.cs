@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls.DataVisualization.Charting;
 using System.IO.Ports;
+using PunchBot;
 
 namespace PunchBot.Capture
 {
@@ -20,10 +21,14 @@ namespace PunchBot.Capture
 
             initSerialRead(comPort, baud);
 
-     
-
+            addInput();
         }
 
+        public void addInput()
+        {
+            SeriesInput seriesInput = new SeriesInput(this);
+            controlPanel.Children.Add(seriesInput);
+        }
 
 
         //initialise -----------------------------------------
@@ -50,11 +55,10 @@ namespace PunchBot.Capture
 
         //Event Handlers -------------------------------------------------
 
-        private void button1_Click(object sender, RoutedEventArgs e)
+        private void AddInputButton_Click(object sender, RoutedEventArgs e)
         {
-            OpenFile();
+            addInput();
         }
-
 
         private void SerialDataHandler(object sender, SerialDataReceivedEventArgs e)
         {
@@ -64,14 +68,16 @@ namespace PunchBot.Capture
              {
                  if (comData.IndexOf("reset") > -1)
                  {
-                     DrawLine("");
+                     //DrawLine("");
                      SerialStream = "";
-                     textBox1.Text = "reset";
+                     //seriesInput1. textBox1.Text = "reset";
+                     placeData("reset", false);
                  }
                  else if (comData.IndexOf("end") > -1)
                 {
-                    DrawLine(SerialStream);
-                    textBox1.Text = SerialStream;
+                    //DrawLine(SerialStream);
+                    //textBox1.Text = SerialStream;
+                    placeData(SerialStream);
                 }
                 else
                 {
@@ -81,69 +87,32 @@ namespace PunchBot.Capture
 
         }
 
+
+
         //helper methods --------------------------------------------
         
-        private void OpenFile()
+        private void placeData(string text, bool draw = true)
         {
-            Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
-
-            dlg.DefaultExt = ".txt";
-            dlg.Filter = "Text documents (.txt)|*.txt";
-
-            Nullable<bool> result = dlg.ShowDialog();
-
-            if (result == true)
+            foreach(var child in this.controlPanel.Children)
             {
-                string filename = dlg.FileName;
-                string fileText = System.IO.File.ReadAllText(filename);
+                if(child.GetType() == typeof(SeriesInput))
+                {
+                    SeriesInput child2 = child as SeriesInput;
 
-                if (textBox1.Text == "")
-                {
-                    textBox1.Text = fileText;
-                    DrawLine(textBox1.Text);
+                    if (child2.UserName.Text == "")
+                    {
+                        if (draw) child2.data = text;
+                        else child2.UserData.Text = text;
+
+                        break;
+                    }
                 }
-                else if (textBox2.Text == "")
-                {
-                    textBox2.Text = fileText;
-                    DrawLine(textBox2.Text);
-                }
+
+               
             }
         }
 
 
-        private void DrawLine(string text)
-        {
-            LineSeries lineSeries1 = new LineSeries();
-            lineSeries1.Title = "Title";
-            lineSeries1.DependentValuePath = "Value";
-            lineSeries1.IndependentValuePath = "Key";
-            lineSeries1.ItemsSource = ConvertTextToLine(text);
-            lineChart.Series.Add(lineSeries1);
-
-            //((LineSeries)lineChart.Series[0]).ItemsSource = ConvertTextToLine(text);
-        }
-
-        private KeyValuePair<int, int>[] ConvertTextToLine(string text)
-        {
-
-            string[] points = text.Split(new string[] { "\n", "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
-
-            KeyValuePair<int, int>[] pointsKVP = new KeyValuePair<int, int>[points.Length];
-            for (int i = 0; i < points.Length; i++)
-            {
-                try
-                {
-                    var value = points[i];
-                    //if (value == "end" || value == "reset") continue;
-                    pointsKVP[i] = new KeyValuePair<int, int>(i, Convert.ToInt32(points[i]));
-                }
-                catch(Exception ex)
-                {
-                    continue;
-                }
-            }
-
-            return pointsKVP;
-        }
+      
     }
 }
