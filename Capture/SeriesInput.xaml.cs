@@ -13,9 +13,10 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Controls.DataVisualization.Charting;
-using PunchBot.Capture;
+using Capture;
+using PunchBot.Core;
 
-namespace PunchBot
+namespace Capture
 {
     /// <summary>
     /// Interaction logic for UserControl1.xaml
@@ -77,6 +78,12 @@ namespace PunchBot
            
             LineSeries.Title = this.UserName.Text;
             LineSeries.ItemsSource = ConvertTextToLine(text);
+
+            Calculator core = new Calculator();
+            int[] data = core.convertData(text);
+
+            score.Content = core.getAcceleration(data).ToString();
+
         }
 
         private KeyValuePair<int, int>[] ConvertTextToLine(string text)

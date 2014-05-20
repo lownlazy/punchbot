@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls.DataVisualization.Charting;
 using System.IO.Ports;
-using PunchBot;
+using Capture;
 
-namespace PunchBot.Capture
+namespace Capture
 {
     public partial class MainWindow : Window
     {

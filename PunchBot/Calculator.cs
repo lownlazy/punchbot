@@ -6,13 +6,28 @@ using System.Threading.Tasks;
 
 namespace PunchBot.Core
 {
-    public class Core
+    public class Calculator
     {
         int[] Data { get; set; }
+        
+        //pulse = Optical Rotary Encoder signal pulse
+        //Pulses in one full revolution of the ORE
+        int pulsesPerRev = 1024;
 
-        public Core(int[] data)
+        //Radians per 360 degreee rovolution
+        double radPerRev = 6.283185307;
+
+
+        public Calculator()
         {
-            Data = data;
+            //Data = data;
+        }
+
+        public int[] convertData(string dataText)
+        {
+            string[] data = dataText.Split(new string[] { "\n", "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
+            int[] intArray = Array.ConvertAll(data, s => int.Parse(s));
+            return intArray;
         }
 
         public double GetTorque(int[] data)
@@ -25,24 +40,23 @@ namespace PunchBot.Core
         }
 
         public double getAcceleration(int[] data)
-        {
-            //pulse = Optical Rotary Encoder signal pulse
-            //Pulses in one full revolution of the ORE
-            var pulsesPerRev = 1024;     
-       
-            //Radians per 360 degreee rovolution
-            var radPerRev = 6.283185307;
-
-            //Number of Radians in a Pulse
-            var radPerPulse = radPerRev / pulsesPerRev;
-            
+        {          
             //the end of acceleration within the data
             var index = GetEndIndex(data);
 
             double time = GetAccelerationSeconds(data, index);
-           // var radians = GetAccelerationRadians(data, index);
+            double radians = GetAccelerationRadians(index);
 
-            return time;
+            return radians / time;
+        }
+
+        private double GetAccelerationRadians(int index)
+        {
+            //Number of Radians in a Pulse
+            double radPerPulse = radPerRev / pulsesPerRev;
+            double radians = index + 1 * radPerPulse;
+
+            return radians;
         }
 
         //in seconds - converted from microseconds
@@ -64,7 +78,7 @@ namespace PunchBot.Core
                 int d0 = data[i];
                 int diff = d1 - d0;
 
-                if(diff >= 0)
+                if(diff <= 0)
                 {
                     return i;
                 }
