@@ -15,33 +15,45 @@ namespace PunchBot.Core
             Data = data;
         }
 
-        /*public decimal GetTorque(int[] data)
+        public double GetTorque(int[] data)
         {
-
-        }*/
+            double rs2 = getAcceleration(data);
+            double moment = 1.000000000; //value from excel worksheet
+            double torque = rs2 * moment;
+         
+            return torque;
+        }
 
         public double getAcceleration(int[] data)
         {
-            var microSecondsInOneSecond = 1000000;
+            //pulse = Optical Rotary Encoder signal pulse
+            //Pulses in one full revolution of the ORE
+            var pulsesPerRev = 1024;     
+       
             //Radians per 360 degreee rovolution
             var radPerRev = 6.283185307;
-            //ticks = Optical rotary encoder signals
-            //Ticker in one full revolution
-            var ticksPerRev = 1024;
-            var radPerTick = radPerRev / ticksPerRev;
-            var AccelerationEndTime = data[GetEndIndex(data)]; //<-- differnet but better from paper version
-            var secondsPerTick = AccelerationEndTime / microSecondsInOneSecond;
+
+            //Number of Radians in a Pulse
+            var radPerPulse = radPerRev / pulsesPerRev;
+            
+            //the end of acceleration within the data
             var index = GetEndIndex(data);
-            var time = GetTime(data, index);
+
+            double time = GetAccelerationSeconds(data, index);
+           // var radians = GetAccelerationRadians(data, index);
+
             return time;
         }
 
         //in seconds - converted from microseconds
-        private int GetTime(int[] data, int index)
+        private double GetAccelerationSeconds(int[] data, int index)
         {
+            int microSecondsInOneSecond = 1000000;
+
             int[] trimmedData = data.Take(index + 1).ToArray();
-            int sum = trimmedData.Sum();
-            return sum;
+            int sum = trimmedData.Sum(); //microseconds
+            double seconds = sum / microSecondsInOneSecond;
+            return seconds;
         }
 
         public int GetEndIndex(int[] data)
@@ -66,8 +78,7 @@ namespace PunchBot.Core
 
         //Development helper
         public static string[] GetData(string path)
-        {
-            
+        {           
              string fileText = System.IO.File.ReadAllText(path);
 
              return fileText.Split(',');
