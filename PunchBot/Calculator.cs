@@ -15,7 +15,7 @@ namespace PunchBot.Core
         int pulsesPerRev = 1024;
 
         //Radians per 360 degreee rovolution
-        double radPerRev = 6.283185307;
+        decimal radPerRev = 6.283185307M;
 
 
         public Calculator()
@@ -30,43 +30,43 @@ namespace PunchBot.Core
             return intArray;
         }
 
-        public double GetTorque(int[] data)
+        public decimal GetTorque(int[] data)
         {
-            double rs2 = getAcceleration(data);
-            double moment = 1.000000000; //value from excel worksheet
-            double torque = rs2 * moment;
+            decimal rs2 = getAcceleration(data);
+            decimal moment = 1; //value from excel worksheet
+            decimal torque = rs2 * moment;
          
             return torque;
         }
 
-        public double getAcceleration(int[] data)
+        public decimal getAcceleration(int[] data)
         {          
             //the end of acceleration within the data
             var index = GetEndIndex(data);
 
-            double time = GetAccelerationSeconds(data, index);
-            double radians = GetAccelerationRadians(index);
+            decimal time = GetAccelerationSeconds(data, index);
+            decimal radians = GetAccelerationRadians(index);
 
             return radians / time;
         }
 
-        private double GetAccelerationRadians(int index)
+        private decimal GetAccelerationRadians(int index)
         {
             //Number of Radians in a Pulse
-            double radPerPulse = radPerRev / pulsesPerRev;
-            double radians = index + 1 * radPerPulse;
+            decimal radPerPulse = radPerRev / pulsesPerRev;
+            decimal radians = index * radPerPulse;
 
             return radians;
         }
 
         //in seconds - converted from microseconds
-        private double GetAccelerationSeconds(int[] data, int index)
+        private decimal GetAccelerationSeconds(int[] data, int index)
         {
-            int microSecondsInOneSecond = 1000000;
+            decimal microSecondsInOneSecond = 1000000M;
 
             int[] trimmedData = data.Take(index + 1).ToArray();
             int sum = trimmedData.Sum(); //microseconds
-            double seconds = sum / microSecondsInOneSecond;
+            decimal seconds = sum / microSecondsInOneSecond;
             return seconds;
         }
 
@@ -74,13 +74,16 @@ namespace PunchBot.Core
         {
             for (int i = 1; i < data.Length; i++)
             {
-                int d1 = data[i + 1];
                 int d0 = data[i];
-                int diff = d1 - d0;
+                int d1 = data[i + 1];
+                int d2 = data[i + 2];
+                
+                int currentSpan = d1 - d0;
+                int nextSpan = d2 - d1;
 
-                if(diff <= 0)
+                if (currentSpan <= nextSpan)
                 {
-                    return i;
+                    return i+1;
                 }
             }
 
