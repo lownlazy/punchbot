@@ -37,8 +37,7 @@ namespace Capture
         {
             if (Serial == null)
             {
-                Serial = new SerialPort(ComPort);
-                Serial.BaudRate = BaudRate;
+                Serial = new SerialPort(ComPort, BaudRate);
 
                 try
                 {
@@ -68,15 +67,11 @@ namespace Capture
              {
                  if (comData.IndexOf("reset") > -1)
                  {
-                     //DrawLine("");
                      SerialStream = "";
-                     //seriesInput1. textBox1.Text = "reset";
                      placeData("reset", false);
                  }
                  else if (comData.IndexOf("end") > -1)
                 {
-                    //DrawLine(SerialStream);
-                    //textBox1.Text = SerialStream;
                     placeData(SerialStream);
                 }
                 else
