@@ -27,6 +27,7 @@ namespace Capture
         public void addInput()
         {
             SeriesInput seriesInput = new SeriesInput(this);
+            seriesInput.UserName.Text = controlPanel.Children.Count.ToString();
             controlPanel.Children.Add(seriesInput);
         }
 
@@ -94,7 +95,7 @@ namespace Capture
                 {
                     SeriesInput child2 = child as SeriesInput;
 
-                    if (child2.UserName.Text == "")
+                    if (child2.UserData.Text.Length < 20)
                     {
                         if (draw) child2.data = text;
                         else child2.UserData.Text = text;

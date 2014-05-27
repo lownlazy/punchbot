@@ -3,25 +3,28 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             mc:Ignorable="d" Margin="5,5,5,5"
+             mc:Ignorable="d" Margin="5,5,5,5" Width="140"
             >
 
     <Grid >
         <Grid.RowDefinitions>
             <RowDefinition Height="27" />
             <RowDefinition Height="auto" />
+            <RowDefinition Height="27" />
         </Grid.RowDefinitions>
 
         <StackPanel Grid.Row="0" Orientation="Horizontal"   >
-            <TextBox x:Name="UserName"   TextWrapping="Wrap" VerticalAlignment="Top" Width="120" ToolTip="Name" Height="23" TextChanged="UserName_TextChanged"/>
-            <Button Content="Load" Height="23" HorizontalAlignment="Left" Margin="5,0,0,0" x:Name="SampleButton" VerticalAlignment="Top" Width="54" Click="SampleButton_Click"  />
+            <TextBox x:Name="UserName"   TextWrapping="Wrap" VerticalAlignment="Top" Width="113" ToolTip="Name" Height="23" TextChanged="UserName_TextChanged"/>
+            <Button Content="" Height="23" HorizontalAlignment="Left" Margin="5,0,0,0" x:Name="SampleButton" VerticalAlignment="Top" Width="22" Click="SampleButton_Click"  />
         </StackPanel>
 
         <StackPanel Grid.Row="1" Orientation="Horizontal"  >
-            <TextBox x:Name="UserData" HorizontalAlignment="Left" Height="62" TextWrapping="Wrap" VerticalAlignment="Top" Width="118"/>
-            <Label x:Name="score" Height="62" Width="57" Content="99Nm" FontSize="20" />
+            <TextBox x:Name="UserData" HorizontalAlignment="Left" Height="62" TextWrapping="Wrap" VerticalAlignment="Top" Width="140"/>
         </StackPanel>
-
+        
+        <StackPanel Grid.Row="2" Orientation="Horizontal"  >
+            <Label x:Name="score" Height="62" Width="57" Content="" FontSize="16" />
+        </StackPanel>
     </Grid>
 
 </UserControl>

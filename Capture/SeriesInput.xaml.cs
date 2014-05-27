@@ -82,7 +82,7 @@ namespace Capture
             Calculator core = new Calculator();
             int[] data = core.convertData(text);
 
-            score.Content = core.getAcceleration(data).ToString();
+            score.Content = core.GetTorque(data).ToString();
 
         }
 

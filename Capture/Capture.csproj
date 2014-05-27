@@ -110,9 +110,6 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\PunchBot\PunchBot.csproj">
       <Project>{326dc094-95ba-44bd-a5ec-68b1c3c18ce3}</Project>
       <Name>PunchBot</Name>

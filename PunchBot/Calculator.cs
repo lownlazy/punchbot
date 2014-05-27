@@ -32,25 +32,30 @@ namespace PunchBot.Core
 
         public decimal GetTorque(int[] data)
         {
-            decimal rs2 = getAcceleration(data);
-            decimal moment = 1; //value from excel worksheet
-            decimal torque = rs2 * moment;
+            decimal radiansPerSecondSquared = getRadiansPerSecondSquared(data);
+
+            //get radians per second squared
+            decimal moment = 0.07614M; //value from excel worksheet
+            decimal torque = radiansPerSecondSquared * moment;
          
             return torque;
         }
 
-        public decimal getAcceleration(int[] data)
+        public decimal getRadiansPerSecondSquared(int[] data)
         {          
             //the end of acceleration within the data
             var index = GetEndIndex(data);
 
             decimal time = GetAccelerationSeconds(data, index);
-            decimal radians = GetAccelerationRadians(index);
+            decimal radians = GetRadians(index);
 
-            return radians / time;
+            decimal radiansPerSecond = radians / time;
+            decimal radiansPerSecondSquared = radiansPerSecond / time;
+
+            return radiansPerSecondSquared;
         }
 
-        private decimal GetAccelerationRadians(int index)
+        private decimal GetRadians(int index)
         {
             //Number of Radians in a Pulse
             decimal radPerPulse = radPerRev / pulsesPerRev;
