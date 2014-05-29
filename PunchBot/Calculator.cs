@@ -17,6 +17,10 @@ namespace PunchBot.Core
         //Radians per 360 degreee rovolution
         decimal radPerRev = 6.283185307M;
 
+        //value from excel worksheet
+        decimal momentOfInertia = 0.077547302902M;
+
+
 
         public Calculator()
         {
@@ -34,9 +38,7 @@ namespace PunchBot.Core
         {
             decimal radiansPerSecondSquared = getRadiansPerSecondSquared(data);
 
-            //get radians per second squared
-            decimal moment = 0.07614M; //value from excel worksheet
-            decimal torque = radiansPerSecondSquared * moment;
+            decimal torque = radiansPerSecondSquared * momentOfInertia;
          
             return torque;
         }
@@ -49,8 +51,8 @@ namespace PunchBot.Core
             decimal time = GetAccelerationSeconds(data, index);
             decimal radians = GetRadians(index);
 
-            decimal radiansPerSecond = radians / time;
-            decimal radiansPerSecondSquared = radiansPerSecond / time;
+            decimal averageRadiansPerSecond = radians / time;
+            decimal radiansPerSecondSquared = averageRadiansPerSecond / time;
 
             return radiansPerSecondSquared;
         }
