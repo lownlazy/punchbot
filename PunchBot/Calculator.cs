@@ -2,7 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Windows;
+using System.Windows.Forms;
 using System.Threading.Tasks;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
 
 namespace PunchBot.Core
 {
@@ -12,10 +17,12 @@ namespace PunchBot.Core
         
         //pulse = Optical Rotary Encoder signal pulse
         //Pulses in one full revolution of the ORE
-        int pulsesPerRev = 1024;
+        int PulsesPerRev = 1024;
 
         //Radians per 360 degreee rovolution
-        decimal radPerRev = 6.283185307M;
+        decimal RadPerRev = 6.283185307M;
+
+        decimal MicroSecondsInOneSecond = 1000000M;
 
         //value from excel worksheet
         decimal momentOfInertia = 0.077547302902M;
@@ -24,7 +31,7 @@ namespace PunchBot.Core
 
         public Calculator()
         {
-            //Data = data;
+           
         }
 
         public int[] convertData(string dataText)
@@ -44,60 +51,66 @@ namespace PunchBot.Core
         }
 
         public decimal getRadiansPerSecondSquared(int[] data)
-        {          
+        {
+            var diffList = GetDataDifferences(data);
+
             //the end of acceleration within the data
-            var index = GetEndIndex(data);
+            var index = GetEndIndex(diffList);
 
-            decimal time = GetAccelerationSeconds(data, index);
-            decimal radians = GetRadians(index);
+            decimal AccelerationTime = data[index] / MicroSecondsInOneSecond;
+            decimal EndRadiansPerSecond = GetRadiansPerSecond(diffList, index);
 
-            decimal averageRadiansPerSecond = radians / time;
-            decimal radiansPerSecondSquared = averageRadiansPerSecond / time;
+            MessageBox.Show(data[index].ToString() + " - " + diffList[index].ToString());
+            //MessageBox.Show(EndRadiansPerSecond.ToString());
+
+            //decimal averageRadiansPerSecond = radians / time;
+            decimal radiansPerSecondSquared = EndRadiansPerSecond / AccelerationTime;
 
             return radiansPerSecondSquared;
         }
+        
 
-        private decimal GetRadians(int index)
+        //get the rad/sec speed of the last point of acceleration
+        private decimal GetRadiansPerSecond(List<int> diffList, int index)
         {
+            decimal timeInSeconds = diffList[index] / MicroSecondsInOneSecond;
+            decimal multiplier = 1 / timeInSeconds;
+
             //Number of Radians in a Pulse
-            decimal radPerPulse = radPerRev / pulsesPerRev;
-            decimal radians = index * radPerPulse;
+            decimal radPerPulse = RadPerRev / PulsesPerRev;
+            decimal radiansPerSecond = radPerPulse * multiplier;
 
-            return radians;
+            return radiansPerSecond;
         }
 
-        //in seconds - converted from microseconds
-        private decimal GetAccelerationSeconds(int[] data, int index)
-        {
-            decimal microSecondsInOneSecond = 1000000M;
 
-            int[] trimmedData = data.Take(index + 1).ToArray();
-            int sum = trimmedData.Sum(); //microseconds
-            decimal seconds = sum / microSecondsInOneSecond;
-            return seconds;
-        }
 
-        public int GetEndIndex(int[] data)
+        private int GetEndIndex(List<int> diffList)
         {
-            for (int i = 1; i < data.Length; i++)
+            for (int i = 0; i < diffList.Count; i++)
             {
-                int d0 = data[i];
-                int d1 = data[i + 1];
-                int d2 = data[i + 2];
-                
-                int currentSpan = d1 - d0;
-                int nextSpan = d2 - d1;
-
-                if (currentSpan <= nextSpan)
+                if (diffList[i + 1] - diffList[i] >= 0)
                 {
-                    return i+1;
+                    return i;
                 }
             }
 
-            //throw new Error()
             return 0;
+            
         }
 
+        //a list of the time differences between each data sample
+        private List<int> GetDataDifferences(int[] data)
+        {
+            var list = new List<int>();
+
+            for (int i=0; i < data.Length-1; i++ )
+            {
+                list.Add(data[i+1] - data[i]);
+            }
+
+            return list;
+        }
 
 
         //Development helper
