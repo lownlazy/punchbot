@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using PunchBot;
+
 
 namespace PunchBot.Core
 {
@@ -17,7 +19,7 @@ namespace PunchBot.Core
         
         //pulse = Optical Rotary Encoder signal pulse
         //Pulses in one full revolution of the ORE
-        int PulsesPerRev = 1024;
+        int PulsesPerRev = Settings1.Default.PulsesPerRevolution;
 
         //Radians per 360 degreee rovolution
         decimal RadPerRev = 6.283185307M;
@@ -36,6 +38,11 @@ namespace PunchBot.Core
 
         public int[] convertData(string dataText)
         {
+            if (dataText.Length < 20)
+            {
+                return null;
+            }
+
             string[] data = dataText.Split(new string[] { "\n", "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
             int[] intArray = Array.ConvertAll(data, s => int.Parse(s));
             return intArray;
@@ -43,6 +50,8 @@ namespace PunchBot.Core
 
         public decimal GetTorque(int[] data)
         {
+            
+
             decimal radiansPerSecondSquared = getRadiansPerSecondSquared(data);
 
             decimal torque = radiansPerSecondSquared * momentOfInertia;
@@ -57,10 +66,10 @@ namespace PunchBot.Core
             //the end of acceleration within the data
             var index = GetEndIndex(diffList);
 
-            decimal AccelerationTime = data[index] / MicroSecondsInOneSecond;
+            decimal AccelerationTime = data[index+1] / MicroSecondsInOneSecond;
             decimal EndRadiansPerSecond = GetRadiansPerSecond(diffList, index);
 
-            MessageBox.Show(data[index].ToString() + " - " + diffList[index].ToString());
+            MessageBox.Show("index: " + index + " - diff @ index" + diffList[index].ToString());
             //MessageBox.Show(EndRadiansPerSecond.ToString());
 
             //decimal averageRadiansPerSecond = radians / time;

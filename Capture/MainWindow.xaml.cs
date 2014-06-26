@@ -21,14 +21,15 @@ namespace Capture
 
             initSerialRead(comPort, baud);
 
-            addInput();
+            //addInput();
         }
 
-        public void addInput()
+        public SeriesInput addInput()
         {
             SeriesInput seriesInput = new SeriesInput(this);
             seriesInput.UserName.Text = controlPanel.Children.Count.ToString();
             controlPanel.Children.Add(seriesInput);
+            return seriesInput;
         }
 
 
@@ -89,23 +90,25 @@ namespace Capture
         
         private void placeData(string text, bool draw = true)
         {
-            foreach(var child in this.controlPanel.Children)
+            SeriesInput seriesInput = null;
+
+            foreach(var item in this.controlPanel.Children)
             {
-                if(child.GetType() == typeof(SeriesInput))
+                if (item.GetType() == typeof(SeriesInput))
                 {
-                    SeriesInput child2 = child as SeriesInput;
-
-                    if (child2.UserData.Text.Length < 20)
+                    var temp = item as SeriesInput;
+                    if (temp.UserData.Text.Length < 20)
                     {
-                        if (draw) child2.data = text;
-                        else child2.UserData.Text = text;
-
+                        seriesInput = temp;
                         break;
                     }
                 }
-
-               
             }
+
+            if (seriesInput == null) seriesInput = addInput();
+
+            if (draw) seriesInput.data = text;
+            else seriesInput.UserData.Text = text;
         }
 
 
