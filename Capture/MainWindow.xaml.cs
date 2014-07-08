@@ -32,6 +32,25 @@ namespace Capture
             return seriesInput;
         }
 
+        public void OpenFile(SeriesInput seriesInput)
+        {
+            Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
+
+            dlg.DefaultExt = ".txt";
+            dlg.Filter = "Text documents (.txt)|*.txt";
+
+            Nullable<bool> result = dlg.ShowDialog();
+
+            if (result == true)
+            {
+                string filename = dlg.FileName;
+                string fileText = System.IO.File.ReadAllText(filename);
+
+                seriesInput.data = fileText;
+
+                //seriesInput.DrawLine(UserData.Text);
+            }
+        }
 
         //initialise -----------------------------------------
 

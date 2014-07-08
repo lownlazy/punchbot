@@ -69,7 +69,7 @@ namespace PunchBot.Core
             decimal AccelerationTime = data[index+1] / MicroSecondsInOneSecond;
             decimal EndRadiansPerSecond = GetRadiansPerSecond(diffList, index);
 
-            MessageBox.Show("index: " + index + " - diff @ index" + diffList[index].ToString());
+            //MessageBox.Show("index: " + index + " - diff @ index" + diffList[index].ToString());
             //MessageBox.Show(EndRadiansPerSecond.ToString());
 
             //decimal averageRadiansPerSecond = radians / time;
@@ -96,7 +96,8 @@ namespace PunchBot.Core
 
         private int GetEndIndex(List<int> diffList)
         {
-            for (int i = 0; i < diffList.Count; i++)
+            //start at 2 because 1 has an unknown quantity 
+            for (int i = 2; i < diffList.Count; i++)
             {
                 if (diffList[i + 1] - diffList[i] >= 0)
                 {

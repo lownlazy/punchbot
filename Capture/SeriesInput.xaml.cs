@@ -30,6 +30,7 @@ namespace Capture
         {
             Main = main;
             InitializeComponent();
+            Main.OpenFile(this);
         }
 
         public string data
@@ -40,29 +41,13 @@ namespace Capture
             }
         }
 
-        private void OpenFile()
-        {
-            Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
-
-            dlg.DefaultExt = ".txt";
-            dlg.Filter = "Text documents (.txt)|*.txt";
-
-            Nullable<bool> result = dlg.ShowDialog();
-
-            if (result == true)
-            {
-                string filename = dlg.FileName;
-                string fileText = System.IO.File.ReadAllText(filename);
-
-                UserData.Text = fileText;
-
-                DrawLine(UserData.Text);            
-            }
-        }
-
         private void SampleButton_Click(object sender, RoutedEventArgs e)
         {
-            OpenFile();
+            //OpenFile();
+            Main.lineChart.Series.Remove(LineSeries);
+            LineSeries = null;
+            score.Content = "";
+            UserData.Text = "";
         }
 
         private void DrawLine(string text)
