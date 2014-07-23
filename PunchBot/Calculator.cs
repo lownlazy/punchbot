@@ -27,7 +27,7 @@ namespace PunchBot.Core
         decimal MicroSecondsInOneSecond = 1000000M;
 
         //value from excel worksheet
-        decimal momentOfInertia = 0.077547302902M;
+        decimal momentOfInertia = 0.06413274M;
 
 
 
@@ -69,7 +69,7 @@ namespace PunchBot.Core
             decimal AccelerationTime = data[index+1] / MicroSecondsInOneSecond;
             decimal EndRadiansPerSecond = GetRadiansPerSecond(diffList, index);
 
-            //MessageBox.Show("index: " + index + " - diff @ index" + diffList[index].ToString());
+            MessageBox.Show("index: " + index + ", diff@index: " + diffList[index].ToString());
             //MessageBox.Show(EndRadiansPerSecond.ToString());
 
             //decimal averageRadiansPerSecond = radians / time;

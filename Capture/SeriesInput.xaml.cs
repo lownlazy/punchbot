@@ -30,14 +30,26 @@ namespace Capture
         {
             Main = main;
             InitializeComponent();
-            Main.OpenFile(this);
         }
 
         public string data
         {
             set {
-                DrawLine(value);
+                var data = ConvertTextToLine(value);
+
+                if(data.ElementAt(10).Value > 10000)
+                {
+                    //MessageBox.Show("data error: " + value.Substring(0, 100));
+                    return;
+                }
+
+                DrawLine(data);
                 UserData.Text = value;
+
+                Calculator core = new Calculator();
+                int[] intData = core.convertData(value);
+
+                score.Content = core.GetTorque(intData).ToString();
             }
         }
 
@@ -50,24 +62,18 @@ namespace Capture
             UserData.Text = "";
         }
 
-        private void DrawLine(string text)
+        private void DrawLine(KeyValuePair<int, int>[] source)
         {
             if (LineSeries == null)
             {
                 LineSeries = new LineSeries();
                 LineSeries.DependentValuePath = "Value";
                 LineSeries.IndependentValuePath = "Key";
-                LineSeries.ItemsSource = ConvertTextToLine(text);
+                LineSeries.ItemsSource = source;
                 Main.lineChart.Series.Add(LineSeries);
             }
            
             LineSeries.Title = this.UserName.Text;
-            LineSeries.ItemsSource = ConvertTextToLine(text);
-
-            Calculator core = new Calculator();
-            int[] data = core.convertData(text);
-
-            score.Content =  core.GetTorque(data).ToString();
 
         }
 
@@ -87,7 +93,7 @@ namespace Capture
                 }
                 catch (Exception)
                 {
-                    continue;
+                    MessageBox.Show("Error converting text to data");
                 }
             }
 
