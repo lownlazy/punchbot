@@ -25,7 +25,7 @@ namespace PunchBot {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("2048")]
+        [global::System.Configuration.DefaultSettingValueAttribute("1024")]
         public int PulsesPerRevolution {
             get {
                 return ((int)(this["PulsesPerRevolution"]));

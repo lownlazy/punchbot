@@ -47,8 +47,6 @@ namespace Capture
                 string fileText = System.IO.File.ReadAllText(filename);
 
                 seriesInput.data = fileText;
-
-                //seriesInput.DrawLine(UserData.Text);
             }
         }
 
@@ -89,11 +87,11 @@ namespace Capture
                  if (comData.IndexOf("reset") > -1)
                  {
                      SerialStream = "";
-                     placeData("reset", false);
+                     BroadcastData("reset", false);
                  }
                  else if (comData.IndexOf("end") > -1)
                 {
-                    placeData(SerialStream);
+                    BroadcastData(SerialStream);
                 }
                 else
                 {
@@ -107,7 +105,7 @@ namespace Capture
 
         //helper methods --------------------------------------------
         
-        private void placeData(string text, bool draw = true)
+        private void BroadcastData(string text, bool draw = true)
         {
             SeriesInput seriesInput = null;
 

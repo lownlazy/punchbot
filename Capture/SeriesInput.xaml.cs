@@ -37,19 +37,23 @@ namespace Capture
             set {
                 var data = ConvertTextToLine(value);
 
-                if(data.ElementAt(10).Value > 10000)
+                //check for irrelivant data, usually caused by the head being bumped or is return bounce
+                if (data.ElementAt(5).Value > 40000)
                 {
                     //MessageBox.Show("data error: " + value.Substring(0, 100));
                     return;
                 }
-
+                
                 DrawLine(data);
-                UserData.Text = value;
+                
 
                 Calculator core = new Calculator();
-                int[] intData = core.convertData(value);
+                int[] intData = ConvertData(value);
 
                 score.Content = core.GetTorque(intData).ToString();
+
+                //string[] x = core.diffList.Select(n => n.ToString()).ToArray();
+                UserData.Text = value; //string.Join(",", x); //value;
             }
         }
 
@@ -83,7 +87,7 @@ namespace Capture
             string[] points = text.Split(new string[] { "\n", "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
 
             KeyValuePair<int, int>[] pointsKVP = new KeyValuePair<int, int>[points.Length];
-            for (int i = 0; i < 50; i++)
+            for (int i = 0; i < 30; i++)
             {
                 try
                 {
@@ -106,6 +110,18 @@ namespace Capture
             {
                 LineSeries.Title = this.UserName.Text;
             }
+        }
+
+        private int[] ConvertData(string dataText)
+        {
+            if (dataText.Length < 20)
+            {
+                return null;
+            }
+
+            string[] data = dataText.Split(new string[] { "\n", "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
+            int[] intArray = Array.ConvertAll(data, s => int.Parse(s));
+            return intArray;
         }
     }
 }

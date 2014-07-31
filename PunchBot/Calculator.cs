@@ -29,29 +29,17 @@ namespace PunchBot.Core
         //value from excel worksheet
         decimal momentOfInertia = 0.06413274M;
 
-
+        public List<int> diffList;
 
         public Calculator()
         {
            
         }
 
-        public int[] convertData(string dataText)
-        {
-            if (dataText.Length < 20)
-            {
-                return null;
-            }
-
-            string[] data = dataText.Split(new string[] { "\n", "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
-            int[] intArray = Array.ConvertAll(data, s => int.Parse(s));
-            return intArray;
-        }
 
         public decimal GetTorque(int[] data)
         {
-            
-
+           
             decimal radiansPerSecondSquared = getRadiansPerSecondSquared(data);
 
             decimal torque = radiansPerSecondSquared * momentOfInertia;
@@ -59,49 +47,63 @@ namespace PunchBot.Core
             return torque;
         }
 
-        public decimal getRadiansPerSecondSquared(int[] data)
+  
+
+        public decimal getRadiansPerSecondSquared(int[] rawData)
         {
-            var diffList = GetDataDifferences(data);
-
             //the end of acceleration within the data
-            var index = GetEndIndex(diffList);
+            var accelEndIndex = GetEndIndex(rawData);
 
-            decimal AccelerationTime = data[index+1] / MicroSecondsInOneSecond;
-            decimal EndRadiansPerSecond = GetRadiansPerSecond(diffList, index);
+            var startTime = rawData[1]; //0-1 range is invalid
+            var endTime = rawData[accelEndIndex];
 
-            MessageBox.Show("index: " + index + ", diff@index: " + diffList[index].ToString());
+            decimal AccelTimeInSec = (endTime - startTime) / MicroSecondsInOneSecond;
+            // - 1 to remove invalid first value + because we want the count (not the index)
+            decimal radians = GetRadians(accelEndIndex - 1+1);
+            decimal radiansPerSecond = radians / AccelTimeInSec;
+
+            MessageBox.Show("accelEndIndex: " + accelEndIndex);
             //MessageBox.Show(EndRadiansPerSecond.ToString());
 
-            //decimal averageRadiansPerSecond = radians / time;
-            decimal radiansPerSecondSquared = EndRadiansPerSecond / AccelerationTime;
+            decimal radiansPerSecondSquared = radiansPerSecond / AccelTimeInSec;
 
             return radiansPerSecondSquared;
         }
-        
 
-        //get the rad/sec speed of the last point of acceleration
-        private decimal GetRadiansPerSecond(List<int> diffList, int index)
+        //radians covered during the acceleration period
+        private decimal GetRadians(int pulsesInAcccelPeriod)
         {
-            decimal timeInSeconds = diffList[index] / MicroSecondsInOneSecond;
-            decimal multiplier = 1 / timeInSeconds;
+            decimal radPerPulse = RadPerRev / PulsesPerRev * pulsesInAcccelPeriod;
 
-            //Number of Radians in a Pulse
-            decimal radPerPulse = RadPerRev / PulsesPerRev;
-            decimal radiansPerSecond = radPerPulse * multiplier;
-
-            return radiansPerSecond;
+            return radPerPulse;
         }
 
+        //get the rad/sec speed of the last point of acceleration
+        //private decimal GetRadiansPerSecond(int[] rawData, int accelEndIndex)
+        //{
+        //    va
+        //    decimal accelTimeInSeconds = rawData[accelEndIndex] / MicroSecondsInOneSecond;
+        //    decimal multiplier = 1 / accelTimeInSeconds;
+
+        //    //Number of Radians in a Pulse
+        //    decimal radPerPulse = RadPerRev / PulsesPerRev;
+        //    decimal radiansPerSecond = radPerPulse * multiplier;
+
+        //    return radiansPerSecond;
+        //}
 
 
-        private int GetEndIndex(List<int> diffList)
+
+        private int GetEndIndex(int[] rawData)
         {
-            //start at 2 because 1 has an unknown quantity 
-            for (int i = 2; i < diffList.Count; i++)
+            var diffList = GetDataDifferences(rawData);
+
+            for (int i = 1; i < diffList.Count; i++)
             {
                 if (diffList[i + 1] - diffList[i] >= 0)
                 {
-                    return i;
+                    //+1 because we want the correct index inside the raw data
+                    return i+1;
                 }
             }
 
