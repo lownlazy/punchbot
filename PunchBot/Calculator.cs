@@ -37,7 +37,7 @@ namespace PunchBot.Core
         }
 
 
-        public decimal GetTorque(int[] data)
+        public decimal GetTorque(Double[] data)
         {
            
             decimal radiansPerSecondSquared = getRadiansPerSecondSquared(data);
@@ -49,7 +49,7 @@ namespace PunchBot.Core
 
   
 
-        public decimal getRadiansPerSecondSquared(int[] rawData)
+        public decimal getRadiansPerSecondSquared(Double[] rawData)
         {
             //the end of acceleration within the data
             var accelEndIndex = GetEndIndex(rawData);
@@ -57,8 +57,8 @@ namespace PunchBot.Core
             var startTime = rawData[1]; //0-1 range is invalid
             var endTime = rawData[accelEndIndex];
 
-            decimal AccelTimeInSec = (endTime - startTime) / MicroSecondsInOneSecond;
-            // - 1 to remove invalid first value + because we want the count (not the index)
+            decimal AccelTimeInSec = (Convert.ToDecimal(endTime) - Convert.ToDecimal(startTime)) / MicroSecondsInOneSecond;
+            // - 1 to remove invalid first value, then + 1 because we want the count (not the index)
             decimal radians = GetRadians(accelEndIndex - 1+1);
             decimal radiansPerSecond = radians / AccelTimeInSec;
 
@@ -94,7 +94,7 @@ namespace PunchBot.Core
 
 
 
-        private int GetEndIndex(int[] rawData)
+        private int GetEndIndex(Double[] rawData)
         {
             var diffList = GetDataDifferences(rawData);
 
@@ -112,9 +112,9 @@ namespace PunchBot.Core
         }
 
         //a list of the time differences between each data sample
-        private List<int> GetDataDifferences(int[] data)
+        private List<Double> GetDataDifferences(Double[] data)
         {
-            var list = new List<int>();
+            var list = new List<Double>();
 
             for (int i=0; i < data.Length-1; i++ )
             {

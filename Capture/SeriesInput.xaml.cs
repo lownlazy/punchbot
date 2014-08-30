@@ -41,14 +41,14 @@ namespace Capture
                 if (data.ElementAt(5).Value > 40000)
                 {
                     //MessageBox.Show("data error: " + value.Substring(0, 100));
-                    return;
+                    //return;
                 }
                 
                 DrawLine(data);
                 
 
                 Calculator core = new Calculator();
-                int[] intData = ConvertData(value);
+                var intData = ConvertData(value);
 
                 score.Content = core.GetTorque(intData).ToString();
 
@@ -66,7 +66,7 @@ namespace Capture
             UserData.Text = "";
         }
 
-        private void DrawLine(KeyValuePair<int, int>[] source)
+        private void DrawLine(KeyValuePair<int, Double>[] source)
         {
             if (LineSeries == null)
             {
@@ -81,19 +81,19 @@ namespace Capture
 
         }
 
-        private KeyValuePair<int, int>[] ConvertTextToLine(string text)
+        private KeyValuePair<int, Double>[] ConvertTextToLine(string text)
         {
 
             string[] points = text.Split(new string[] { "\n", "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
 
-            KeyValuePair<int, int>[] pointsKVP = new KeyValuePair<int, int>[points.Length];
-            for (int i = 0; i < 30; i++)
+            KeyValuePair<int, Double>[] pointsKVP = new KeyValuePair<int, Double>[points.Length];
+            for (int i = 0; i < 40; i++)
             {
                 try
                 {
                     var value = points[i];
                     //if (value == "end" || value == "reset") continue;
-                    pointsKVP[i] = new KeyValuePair<int, int>(i, Convert.ToInt32(points[i]));
+                    pointsKVP[i] = new KeyValuePair<int, Double>(i, Convert.ToDouble(points[i]));
                 }
                 catch (Exception)
                 {
@@ -112,7 +112,7 @@ namespace Capture
             }
         }
 
-        private int[] ConvertData(string dataText)
+        private Double[] ConvertData(string dataText)
         {
             if (dataText.Length < 20)
             {
@@ -120,8 +120,8 @@ namespace Capture
             }
 
             string[] data = dataText.Split(new string[] { "\n", "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
-            int[] intArray = Array.ConvertAll(data, s => int.Parse(s));
-            return intArray;
+            Double[] array = Array.ConvertAll(data, s => Convert.ToDouble(s));
+            return array;
         }
     }
 }
