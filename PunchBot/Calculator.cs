@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
-using PunchBot;
+using PunchBot.Core;
 using Microsoft.Office.Interop.Excel;
 
 
@@ -38,7 +38,7 @@ namespace PunchBot.Core
         }
 
 
-        public decimal GetTorque(Double[] data)
+        /*public decimal GetTorque(Double[] data)
         {
            
             decimal radiansPerSecondSquared = getRadiansPerSecondSquared(data);
@@ -46,11 +46,11 @@ namespace PunchBot.Core
             decimal torque = radiansPerSecondSquared * momentOfInertia;
          
             return torque;
-        }
+        }*/
 
   
 
-        public decimal getRadiansPerSecondSquared(Double[] rawData)
+        /*public decimal getRadiansPerSecondSquared(Double[] rawData)
         {
             //the end of acceleration within the data
             var accelEndIndex = GetEndIndex(rawData);
@@ -69,7 +69,7 @@ namespace PunchBot.Core
             decimal radiansPerSecondSquared = radiansPerSecond / AccelTimeInSec;
 
             return radiansPerSecondSquared;
-        }
+        }*/
 
         //radians covered during the acceleration period
         private decimal GetRadians(int pulsesInAcccelPeriod)
@@ -95,65 +95,7 @@ namespace PunchBot.Core
 
 
 
-        private int GetEndIndex(Double[] rawData)
-        {
-            var diffList = GetDataDifferences(rawData);
 
-            for (int i = 1; i < diffList.Count; i++)
-            {
-                if (diffList[i + 1] - diffList[i] >= 0)
-                {
-                    //+1 because we want the correct index inside the raw data
-                    return i+1;
-                }
-            }
 
-            return 0;
-            
-        }
-
-        //a list of the time differences between each data sample
-        private List<Double> GetDataDifferences(Double[] data)
-        {
-            var list = new List<Double>();
-
-            for (int i=0; i < data.Length-1; i++ )
-            {
-                list.Add(data[i+1] - data[i]);
-            }
-
-            return list;
-        }
-
-        public KeyValuePair<int, double>[] GetTrendLine(int[] xData, double[] yData)
-        {
-
-            var xl = new Microsoft.Office.Interop.Excel.Application();
-		    xl.Visible = true;
-
-            var wsf = xl.WorksheetFunction;
-            List<int> x = new List<int> { 1, 2, 3, 4 };
-            List<int> y = new List<int> { 11, 12, 45, 42 };
-            object o = wsf.LinEst(y.ToArray(), x.ToArray(), false, true);
-
-            KeyValuePair<int, double>[] trend = new KeyValuePair<int, double>[yData.Length];
-
-            for (int i = 0; i < yData.Length; i++)
-            {
-                trend[i] = new KeyValuePair<int, Double>(xData.ElementAt(i), yData.ElementAt(i));
-            }
-
-            return trend;
-        }
-
-        //Development helper
-        public static string GetData(string path)
-        {           
-             string fileText = System.IO.File.ReadAllText(path);
-
-             return fileText; //fileText.Split(',');
-        }
-
-      
     }
 }

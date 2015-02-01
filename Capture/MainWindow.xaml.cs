@@ -46,7 +46,7 @@ namespace Capture
                 string filename = dlg.FileName;
                 string fileText = System.IO.File.ReadAllText(filename);
 
-                seriesInput.data = fileText;
+                //seriesInput.data = fileText;
             }
         }
 
@@ -124,7 +124,7 @@ namespace Capture
 
             if (seriesInput == null) seriesInput = addInput();
 
-            if (draw) seriesInput.data = text;
+            if (draw) seriesInput.data.Source = text;
             else seriesInput.UserData.Text = text;
         }
 

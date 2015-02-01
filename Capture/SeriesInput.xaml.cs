@@ -25,17 +25,33 @@ namespace Capture
     {
         MainWindow Main;
         LineSeries LineSeries;
+        public Data data;
 
         public SeriesInput(MainWindow main)
         {
             Main = main;
             InitializeComponent();
 
-            string dataText = Calculator.GetData(@"C:\Users\Russell\Source\Repos\punchbot\Assets\hit1.txt");
-            data = dataText;
+            data = new Data();
+            data.Source = Data.LoadSampleData(@"C:\Users\Russell\Source\Repos\punchbot\Assets\hit1.txt");
+
+            DrawLine(data.GetAxes());
+
+            Calculator core = new Calculator();
+
+            //score.Content = core.GetTorque(data.Y).ToString();
+
+            KeyValuePair<int, Double>[] trend = data.GetTrendLine();
+            DrawLine(trend);
+
+
+            //string[] x = core.diffList.Select(n => n.ToString()).ToArray();
+            UserData.Text = data.Source; //string.Join(",", x); //value;
         }
 
-        public string data
+        
+
+        /*public string data
         {
             set {
                 var yData = GetYData(value);
@@ -49,20 +65,9 @@ namespace Capture
                     //return;
                 //}
                 
-                DrawLine(xyData);
-
-                Calculator core = new Calculator();
-
-                score.Content = core.GetTorque(yData).ToString();
-
-                KeyValuePair<int, Double>[] trend = core.GetTrendLine(xData,yData); 
-                DrawLine(trend);
-
-
-                //string[] x = core.diffList.Select(n => n.ToString()).ToArray();
-                UserData.Text = value; //string.Join(",", x); //value;
+                
             }
-        }
+        }*/
 
         private void SampleButton_Click(object sender, RoutedEventArgs e)
         {
@@ -93,39 +98,7 @@ namespace Capture
 
         }
 
-        //TODO change to take X and Y arrays
-        private KeyValuePair<int, Double>[] GetXYData(string text)
-        {
-            var single = GetYData(text);
-
-            string[] points = text.Split(new string[] { "\n", "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
-            KeyValuePair<int, Double>[] pointsKVP = new KeyValuePair<int, Double>[points.Length];            
-
-            for (int i = 0; i < 40; i++)
-            {
-                try
-                {
-                    var value = points[i];
-                    //if (value == "end" || value == "reset") continue;
-                    pointsKVP[i] = new KeyValuePair<int, Double>(i, Convert.ToDouble(points[i]));
-                }
-                catch (Exception)
-                {
-                    MessageBox.Show("Error converting text to data");
-                }
-            }
-            
-            return pointsKVP;
-        }
-        /*
-         *        KeyValuePair<int, double>[] trend = new KeyValuePair<int, double>[yData.Length];
-
-            for (int i = 0; i < Data.Length; i++)
-            {
-                trend[i] = new KeyValuePair<int, Double>(xData.ElementAt(i), yData.ElementAt(i));
-            }
-         * */
-
+  
         private void UserName_TextChanged(object sender, TextChangedEventArgs e)
         {
             if (LineSeries != null)
@@ -134,30 +107,7 @@ namespace Capture
             }
         }
 
-         private int[] GetXData(Double[] yData, int startNumber = 0)
-        {
-             int[] xData = new int[yData.Length];
-
-             for (int i = 0; i < yData.Length; i++)
-             {
-                 xData[i] = startNumber + i;
-             }
-
-             return xData;
-        }
-
-        private Double[] GetYData(string dataText)
-        {
-            if (dataText.Length < 20)
-            {
-                return null;
-            }
-
-            string[] data = dataText.Split(new string[] { "\n", "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
-            Double[] array = Array.ConvertAll(data, s => Convert.ToDouble(s));
-            return array;
-        }
-
+  
 
     }
 }
