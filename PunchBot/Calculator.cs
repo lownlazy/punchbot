@@ -9,6 +9,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using PunchBot;
+using Microsoft.Office.Interop.Excel;
 
 
 namespace PunchBot.Core
@@ -124,13 +125,35 @@ namespace PunchBot.Core
             return list;
         }
 
+        public KeyValuePair<int, double>[] GetTrendLine(int[] xData, double[] yData)
+        {
+
+            var xl = new Microsoft.Office.Interop.Excel.Application();
+		    xl.Visible = true;
+
+            var wsf = xl.WorksheetFunction;
+            List<int> x = new List<int> { 1, 2, 3, 4 };
+            List<int> y = new List<int> { 11, 12, 45, 42 };
+            object o = wsf.LinEst(y.ToArray(), x.ToArray(), false, true);
+
+            KeyValuePair<int, double>[] trend = new KeyValuePair<int, double>[yData.Length];
+
+            for (int i = 0; i < yData.Length; i++)
+            {
+                trend[i] = new KeyValuePair<int, Double>(xData.ElementAt(i), yData.ElementAt(i));
+            }
+
+            return trend;
+        }
 
         //Development helper
-        public static string[] GetData(string path)
+        public static string GetData(string path)
         {           
              string fileText = System.IO.File.ReadAllText(path);
 
-             return fileText.Split(',');
+             return fileText; //fileText.Split(',');
         }
+
+      
     }
 }

@@ -21,7 +21,7 @@ namespace Capture
 
             initSerialRead(comPort, baud);
 
-            //addInput();
+            addInput();
         }
 
         public SeriesInput addInput()
