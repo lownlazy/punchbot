@@ -41,8 +41,9 @@ namespace Capture
 
             //score.Content = core.GetTorque(data.Y).ToString();
 
-            KeyValuePair<int, Double>[] trend = data.GetTrendLine();
-            DrawLine(trend);
+            //KeyValuePair<double, double>[] trend = data.GetTrendLine();
+            KeyValuePair<double, double>[] avg = data.GetTrendLine();
+            DrawLine(data.AxesAveraged);
 
 
             //string[] x = core.diffList.Select(n => n.ToString()).ToArray();
@@ -83,7 +84,7 @@ namespace Capture
 
         }
 
-        private void DrawLine(KeyValuePair<int, Double>[] source)
+        private void DrawLine(KeyValuePair<Double, Double>[] source)
         {
             //if (LineSeries == null)
             //{
