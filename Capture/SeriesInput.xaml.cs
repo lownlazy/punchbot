@@ -24,7 +24,7 @@ namespace Capture
     public partial class SeriesInput : UserControl
     {
         MainWindow Main;
-        LineSeries LineSeries;
+        ScatterSeries Series;
         public Data data;
 
         public SeriesInput(MainWindow main)
@@ -43,7 +43,11 @@ namespace Capture
 
             //KeyValuePair<double, double>[] trend = data.GetTrendLine();
             KeyValuePair<double, double>[] avg = data.GetTrendLine();
-            DrawLine(data.AxesAveraged);
+
+            var endIndex = data.GetAccelerationEndIndex(data.AxesAveraged);
+            MessageBox.Show("end: " + data.AxesAveraged.ElementAt(endIndex).Value + " , " + data.AxesAveraged.ElementAt(endIndex).Key);
+
+            DrawLine(data.GetAverageTrimmedAxes(endIndex));
 
 
             //string[] x = core.diffList.Select(n => n.ToString()).ToArray();
@@ -72,8 +76,8 @@ namespace Capture
 
         private void SampleButton_Click(object sender, RoutedEventArgs e)
         {
-            Main.lineChart.Series.Remove(LineSeries);
-            LineSeries = null;
+            Main.lineChart.Series.Remove(Series);
+            Series = null;
             score.Content = "";
             UserData.Text = "";
         }
@@ -88,11 +92,12 @@ namespace Capture
         {
             //if (LineSeries == null)
             //{
-                LineSeries = new LineSeries();
-                LineSeries.DependentValuePath = "Value";
-                LineSeries.IndependentValuePath = "Key";
-                LineSeries.ItemsSource = source;
-                Main.lineChart.Series.Add(LineSeries);
+                Series = new ScatterSeries();
+                Series.DependentValuePath = "Value";
+                Series.IndependentValuePath = "Key";
+                Series.ItemsSource = source;
+       
+                Main.lineChart.Series.Add(Series);
             //}
            //LineSeries.
             //LineSeries.Title = this.UserName.Text;
@@ -102,9 +107,9 @@ namespace Capture
   
         private void UserName_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if (LineSeries != null)
+            if (Series != null)
             {
-                LineSeries.Title = this.UserName.Text;
+                Series.Title = this.UserName.Text;
             }
         }
 
