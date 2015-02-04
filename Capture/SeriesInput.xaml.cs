@@ -24,7 +24,7 @@ namespace Capture
     public partial class SeriesInput : UserControl
     {
         MainWindow Main;
-        ScatterSeries Series;
+        LineSeries series;
         public Data data;
 
         public SeriesInput(MainWindow main)
@@ -35,21 +35,13 @@ namespace Capture
             data = new Data();
             data.Source = Data.LoadSampleData(@"C:\Users\Russell\Source\Repos\punchbot\Assets\hit1.txt");
 
-            DrawLine(data.GetAxes());
+            DrawLine(data.GetAxes(), "source");
+            DrawLine(data.AxesAveragedTrimmed, "average");
+            DrawLine(data.GetTrendInfo(), "trend");
 
-            Calculator core = new Calculator();
-
+            //Calculator core = new Calculator();
             //score.Content = core.GetTorque(data.Y).ToString();
-
-            //KeyValuePair<double, double>[] trend = data.GetTrendLine();
-            KeyValuePair<double, double>[] avg = data.GetTrendLine();
-
-            var endIndex = data.GetAccelerationEndIndex(data.AxesAveraged);
-            MessageBox.Show("end: " + data.AxesAveraged.ElementAt(endIndex).Value + " , " + data.AxesAveraged.ElementAt(endIndex).Key);
-
-            DrawLine(data.GetAverageTrimmedAxes(endIndex));
-
-
+          
             //string[] x = core.diffList.Select(n => n.ToString()).ToArray();
             UserData.Text = data.Source; //string.Join(",", x); //value;
         }
@@ -76,8 +68,8 @@ namespace Capture
 
         private void SampleButton_Click(object sender, RoutedEventArgs e)
         {
-            Main.lineChart.Series.Remove(Series);
-            Series = null;
+            Main.lineChart.Series.Remove(series);
+            series = null;
             score.Content = "";
             UserData.Text = "";
         }
@@ -88,28 +80,34 @@ namespace Capture
 
         }
 
-        private void DrawLine(KeyValuePair<Double, Double>[] source)
+        private void DrawLine(KeyValuePair<Double, Double>[] source, string title = "")
         {
             //if (LineSeries == null)
             //{
-                Series = new ScatterSeries();
-                Series.DependentValuePath = "Value";
-                Series.IndependentValuePath = "Key";
-                Series.ItemsSource = source;
+                series = new LineSeries();
+                series.DependentValuePath = "Value";
+                series.IndependentValuePath = "Key";
+                series.ItemsSource = source;
+
        
-                Main.lineChart.Series.Add(Series);
+                Main.lineChart.Series.Add(series);
             //}
            //LineSeries.
-            //LineSeries.Title = this.UserName.Text;
-
+                if (title == "")
+                {
+                    series.Title = this.UserName.Text;
+                }
+                else {
+                    series.Title = title;
+                }
         }
 
   
         private void UserName_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if (Series != null)
+            if (series != null)
             {
-                Series.Title = this.UserName.Text;
+                series.Title = this.UserName.Text;
             }
         }
 
