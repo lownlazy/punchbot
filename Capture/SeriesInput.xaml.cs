@@ -35,7 +35,7 @@ namespace Capture
             data = new Data();
             data.Source = Data.LoadSampleData(@"C:\Users\Russell\Source\Repos\punchbot\Assets\hit1.txt");
 
-            DrawLine(data.GetAxes(), "source");
+            DrawLine(data.AxesSource, "source");
             DrawLine(data.AxesAveragedTrimmed, "average");
             DrawLine(data.GetTrendInfo(), "trend");
 
