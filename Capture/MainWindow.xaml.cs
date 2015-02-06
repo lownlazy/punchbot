@@ -124,7 +124,7 @@ namespace Capture
 
             if (seriesInput == null) seriesInput = addInput();
 
-            if (draw) seriesInput.data.Source = text;
+            if (draw) seriesInput.data = text;
             else seriesInput.UserData.Text = text;
         }
 

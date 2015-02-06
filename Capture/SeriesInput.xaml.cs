@@ -25,35 +25,35 @@ namespace Capture
     {
         MainWindow Main;
         LineSeries series;
-        public Data data;
+        public Data _data;
 
         public SeriesInput(MainWindow main)
         {
             Main = main;
             InitializeComponent();
 
-            data = new Data();
-            data.Source = Data.LoadSampleData(@"C:\Users\Russell\Source\Repos\punchbot\Assets\hit1.txt");
+    
+        }
 
-            DrawLine(data.AxesSource, "source");
-            DrawLine(data.AxesAveragedTrimmed, "average");
-            DrawLine(data.GetTrendInfo(), "trend");
+        
+
+        public string data
+        {
+            set {
+                
+             _data = new Data();
+            //data.Source = Data.LoadSampleData(@"C:\Users\Russell\Source\Repos\punchbot\Assets\hit1.txt");
+            _data.Source = value;
+
+            //DrawLine(_data.AxesSource, "source");
+            //DrawLine(_data.AxesAveragedTrimmed, "average");
+            DrawLine(_data.GetTrendInfo(), "trend");
 
             //Calculator core = new Calculator();
             //score.Content = core.GetTorque(data.Y).ToString();
           
             //string[] x = core.diffList.Select(n => n.ToString()).ToArray();
-            UserData.Text = data.Source; //string.Join(",", x); //value;
-        }
-
-        
-
-        /*public string data
-        {
-            set {
-                var yData = GetYData(value);
-                var xData = GetXData(yData);
-                var xyData = GetXYData(value);
+            UserData.Text = _data.Source; //string.Join(",", x); //value;
 
                 //check for irrelivant data, usually caused by the head being bumped or is return bounce
                 //if (data.ElementAt(5).Value > 40000)
@@ -64,7 +64,7 @@ namespace Capture
                 
                 
             }
-        }*/
+        }
 
         private void SampleButton_Click(object sender, RoutedEventArgs e)
         {
@@ -82,8 +82,8 @@ namespace Capture
 
         private void DrawLine(KeyValuePair<Double, Double>[] source, string title = "")
         {
-            //if (LineSeries == null)
-            //{
+            if (series == null)
+            {
                 series = new LineSeries();
                 series.DependentValuePath = "Value";
                 series.IndependentValuePath = "Key";
@@ -91,8 +91,8 @@ namespace Capture
 
        
                 Main.lineChart.Series.Add(series);
-            //}
-           //LineSeries.
+            }
+           
                 if (title == "")
                 {
                     series.Title = this.UserName.Text;
