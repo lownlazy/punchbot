@@ -95,7 +95,7 @@ namespace Capture
                 }
                 else
                 {
-                    SerialStream += comData + "\n";
+                    SerialStream += comData + "\n";   
                 }
           }));
 

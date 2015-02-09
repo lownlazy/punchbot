@@ -14,9 +14,8 @@
         </Grid.RowDefinitions>
 
         <StackPanel Grid.Row="0" Orientation="Horizontal"   >
-            <TextBox x:Name="UserName"   TextWrapping="Wrap" VerticalAlignment="Top" Width="85" ToolTip="Name" Height="23" TextChanged="UserName_TextChanged"/>
-            <Button Content="X" Height="23" HorizontalAlignment="Left" Margin="5,0,0,0" x:Name="SampleButton" VerticalAlignment="Top" Width="22" Click="SampleButton_Click"  />
-            <Button Content="+" HorizontalAlignment="Left" Margin="5,0,0,4.2" x:Name="FileButton" Width="22" Click="LoadButton_Click"  />
+            <TextBox x:Name="UserName"   TextWrapping="Wrap" VerticalAlignment="Top" Width="112" ToolTip="Name" Height="23" TextChanged="UserName_TextChanged"/>
+            <Button Content="X" Height="23" HorizontalAlignment="Left" Margin="5,0,0,0" x:Name="SampleButton" VerticalAlignment="Top" Width="22" Click="SampleButton_Click" RenderTransformOrigin="1.136,0.417"  />
         </StackPanel>
 
         <StackPanel Grid.Row="1" Orientation="Horizontal"  >

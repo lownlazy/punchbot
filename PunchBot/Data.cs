@@ -18,15 +18,17 @@ namespace PunchBot.Core
 
     public class Data
     {
-        private int AverageSampleSize = 8;
+       
+        private int SampleSizeForAverage = 8;
         private string _source = "";
         private Double[] X;
-        private Double[] Y;
+        private Double[] SourceInterval;
 
         public KeyValuePair<double, double>[] AxesSource;
         public KeyValuePair<double, double>[] AxesAveraged;
         public KeyValuePair<double, double>[] AxesAveragedTrimmed;
-        
+        public KeyValuePair<double, double>[] Trend;
+        public double TrendIntervalAverage = 0;
 
         public string Source
         {
@@ -34,20 +36,41 @@ namespace PunchBot.Core
             {
                 _source = value;
 
-                var ySource = GetYArray(value);
-                Y = GetYIntervalArray(ySource);
-                X = GetXArray(Y);
-                AxesAveraged = GetAverageAxes(Y, AverageSampleSize);
+                Double[] ySource = GetYArray(value);
+                SourceInterval = GetYIntervalArray(ySource);
+                double[] YAvg = GetYIntervalAverage(SourceInterval, SampleSizeForAverage);
+                X = GetXArray(SourceInterval);
+               // AxesAveraged = GetAverageAxes(Y, AverageSampleSize);
 
-                var endAccelerationLength = GetAccelerationEndIndex(AxesAveraged, AverageSampleSize);
+                var endAccelerationLength = GetAccelerationEndIndex(YAvg, SampleSizeForAverage);
+                AxesSource = GetAxes(endAccelerationLength+1, X, ySource);
+                Trend = GetTrendInfo(endAccelerationLength,X, ySource);
 
-                AxesSource = GetAxes(endAccelerationLength+1);
-                AxesAveragedTrimmed = GetAxesAverageTrimmed(endAccelerationLength, AverageSampleSize);
+                //get average interval length
+                //double[] intervalY = GetYIntervalArray(trendY);
+                //TrendIntervalAverage = intervalY.Average();
+
+                //AxesAveragedTrimmed = GetAxesAverageTrimmed(AxesAveraged, endAccelerationLength, SampleSizeForAverage);
             }
             get
             {
                 return _source;
             }
+        }
+
+        private double[] GetYIntervalAverage(double[] y, int sampleSize)
+        {
+            double[] yAvg = new double[y.Length - sampleSize];
+
+            for (int i = 0; i < y.Length - sampleSize; i++)
+            {
+                Double[] subArray = y.SubArray(i, sampleSize);
+                double value = subArray.Average();
+
+                yAvg[i] = value;
+            }
+
+            return yAvg;
         }
 
         private Double[] GetYArray(string dataText)
@@ -61,34 +84,38 @@ namespace PunchBot.Core
             double[] array = Array.ConvertAll(data, s => Convert.ToDouble(s));
             //Array.Resize<double>(ref array, 25);
 
+            //start the count from Zero
+            var startValue = array[0];
+            array = array.Select(s => s -startValue).ToArray();
+
             return array;
         }
 
 
         //2 axis of original raw data
-        private KeyValuePair<Double, Double>[] GetAxes(int length)
+        private KeyValuePair<Double, Double>[] GetAxes(int length, Double[] x, Double[] y)
         {
-                var xArray = X;
-                Double[] yArray = Y;
+         
           
                 KeyValuePair<double, double>[] xyArray = new KeyValuePair<double, double>[length];
 
                 for (int i = 0; i < length; i++)
                 {
-                    xyArray[i] = new KeyValuePair<double, double>(xArray.ElementAt(i), yArray.ElementAt(i));
+                    xyArray[i] = new KeyValuePair<double, double>(x.ElementAt(i), y.ElementAt(i));
                 }
 
-                return xyArray;
-            
+                return xyArray; 
         }
 
 
-        public KeyValuePair<double, double>[] GetTrendInfo()
+        public KeyValuePair<double, double>[] GetTrendInfo(int length, Double[] x, Double[] y)
         {
             var xl = new Microsoft.Office.Interop.Excel.Application();
             var wsf = xl.WorksheetFunction;
-            double[] x =  AxesSource.Select(pairs => pairs.Key).ToArray();
-            double[] y =  AxesSource.Select(pairs => pairs.Value).ToArray();
+            //double[] x = source.Select(pairs => pairs.Key).ToArray().RemoveAt(0); 
+            //double[] y = source.Select(pairs => pairs.Value).ToArray().RemoveAt(0); 
+            x = x.SubArray(0, length-1);//.RemoveAt(0);
+            y = y.SubArray(0, length).RemoveAt(0);
 
             double[] nlX = x.Select(i => wsf.Ln(i)).ToArray();
             double[] nlY = y.Select(i => wsf.Ln(i)).ToArray();
@@ -121,21 +148,12 @@ namespace PunchBot.Core
             return fileText; 
         }
 
-        public int GetAccelerationEndIndex(KeyValuePair<double, double>[] axes, int averageSampleSize)
+        public int GetAccelerationEndIndex(double[] array, int sampleSize)
         {
-     
-            for (int i = 1; i < axes.Length-1; i++)
-            {
-                if (axes.ElementAt(i).Value - axes.ElementAt(i+1).Value <= 0)
-                {
-                    //convert back to the index equivilant in raw data
-                    double x = axes.ElementAt(i).Key;
-                    double realignedIndex = (x+0.5) - (averageSampleSize/2) + 1;
-                    return Convert.ToInt32(realignedIndex);
-                }
-            }
+            var min = Convert.ToDouble(array.Min());
+            var index = Array.IndexOf(array, min);
 
-            return 0;
+            return index + sampleSize/2;
 
         }
 
@@ -171,13 +189,13 @@ namespace PunchBot.Core
         }
 
         //trimmed to acceleration end
-        public KeyValuePair<double, double>[] GetAxesAverageTrimmed(int length, int AverageSampleSize)
+        public KeyValuePair<double, double>[] GetAxesAverageTrimmed(KeyValuePair<double, double>[] axesAvg, int length, int AverageSampleSize)
         {
             KeyValuePair<double, double>[] subArray = new KeyValuePair<double, double>[length];
 
             for (int i = 0; i < length; i++)
             {
-                subArray[i] = AxesAveraged.ElementAt(i);
+                subArray[i] = axesAvg.ElementAt(i);
             }
 
             return subArray;

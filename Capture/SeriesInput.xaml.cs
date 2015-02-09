@@ -32,7 +32,9 @@ namespace Capture
             Main = main;
             InitializeComponent();
 
-    
+            _data = new Data();
+            data = Data.LoadSampleData(@"C:\Users\Russell\Source\Repos\punchbot\Assets\hit1.txt");
+           
         }
 
         
@@ -41,13 +43,11 @@ namespace Capture
         {
             set {
                 
-             _data = new Data();
-            //data.Source = Data.LoadSampleData(@"C:\Users\Russell\Source\Repos\punchbot\Assets\hit1.txt");
-            _data.Source = value;
+             _data.Source = value;
 
-            //DrawLine(_data.AxesSource, "source");
+            DrawLine(_data.AxesSource, "source");
+            DrawLine(_data.Trend, "trend");
             //DrawLine(_data.AxesAveragedTrimmed, "average");
-            DrawLine(_data.GetTrendInfo(), "trend");
 
             //Calculator core = new Calculator();
             //score.Content = core.GetTorque(data.Y).ToString();
@@ -82,8 +82,8 @@ namespace Capture
 
         private void DrawLine(KeyValuePair<Double, Double>[] source, string title = "")
         {
-            if (series == null)
-            {
+           // if (series == null)
+            //{
                 series = new LineSeries();
                 series.DependentValuePath = "Value";
                 series.IndependentValuePath = "Key";
@@ -91,7 +91,7 @@ namespace Capture
 
        
                 Main.lineChart.Series.Add(series);
-            }
+            //}
            
                 if (title == "")
                 {
