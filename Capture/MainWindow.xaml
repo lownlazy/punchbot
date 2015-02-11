@@ -5,19 +5,19 @@
         xmlns:local="clr-namespace:Capture"
         xmlns:chartingToolkit="clr-namespace:System.Windows.Controls.DataVisualization.Charting;assembly=System.Windows.Controls.DataVisualization.Toolkit" 
     x:Class="Capture.MainWindow"
-        Title="MainWindow" Height="700" Width="900">
+        Title="MainWindow" Height="800" Width="1100">
 
     <Grid >
         <Grid.RowDefinitions>
-            <RowDefinition Height="500" />
-            <RowDefinition Height="*" />
+            <RowDefinition Height="523.2" />
+            <RowDefinition />
         </Grid.RowDefinitions>
 
-        <chartingToolkit:Chart  Name="lineChart" VerticalAlignment="Top" Margin="0,0,0,0" Height="504"  >
+        <chartingToolkit:Chart  Name="lineChart" VerticalAlignment="Top" Margin="0,0,-0.4,0" Height="523"  >
             <!-- chartingToolkit:LineSeries Title="1" AnimationSequence="FirstToLast"  DependentValuePath="Value" IndependentValuePath="Key" ItemsSource="{Binding Points }" IsSelectionEnabled="True"/ -->
         </chartingToolkit:Chart>
 
-        <StackPanel Name="controlPanel" Grid.Row="1" Orientation="Horizontal"   >
+        <StackPanel Name="controlPanel" Orientation="Horizontal" Margin="0,511,-0.4,0.4" Grid.RowSpan="2"   >
             <Button x:Name="AddInputButton" Content="+" Width="32" Margin="2,44,2,35" Click="AddInputButton_Click" FontWeight="Bold" FontSize="20"/>
             <!-- local:SeriesInput x:Name="seriesInput1" / -->
         </StackPanel>

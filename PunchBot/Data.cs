@@ -10,24 +10,18 @@ using System.Collections;
 
 namespace PunchBot.Core
 {
-   public class AxesNames 
-   {
-        public const string RAW = "raw";
-        public const string INTERVAL = "interval";
-   } 
 
     public class Data
     {
        
-        private int SampleSizeForAverage = 8;
+        private int SampleSizeForAverage = Settings1.Default.SampleSizeForAverage;
         private string _source = "";
         private Double[] X;
-        private Double[] SourceInterval;
+        private Double[] RawYInterval;
 
-        public KeyValuePair<double, double>[] AxesSource;
-        public KeyValuePair<double, double>[] AxesAveraged;
-        public KeyValuePair<double, double>[] AxesAveragedTrimmed;
-        public KeyValuePair<double, double>[] Trend;
+        public KeyValuePair<double, double>[] RawAxes;
+        public KeyValuePair<double, double>[] TrendAxes;
+        public double[] TrendY;
         public double TrendIntervalAverage = 0;
 
         public string Source
@@ -37,26 +31,53 @@ namespace PunchBot.Core
                 _source = value;
 
                 Double[] ySource = GetYArray(value);
-                SourceInterval = GetYIntervalArray(ySource);
-                double[] YAvg = GetYIntervalAverage(SourceInterval, SampleSizeForAverage);
-                X = GetXArray(SourceInterval);
+                RawYInterval = GetYIntervalArray(ySource);
+                double[] RawYAvg = GetYIntervalAverage(RawYInterval, SampleSizeForAverage);
+                X = GetXArray(RawYInterval);
                // AxesAveraged = GetAverageAxes(Y, AverageSampleSize);
 
-                var endAccelerationLength = GetAccelerationEndIndex(YAvg, SampleSizeForAverage);
-                AxesSource = GetAxes(endAccelerationLength+1, X, ySource);
-                Trend = GetTrendInfo(endAccelerationLength,X, ySource);
-
-                //get average interval length
-                //double[] intervalY = GetYIntervalArray(trendY);
-                //TrendIntervalAverage = intervalY.Average();
-
-                //AxesAveragedTrimmed = GetAxesAverageTrimmed(AxesAveraged, endAccelerationLength, SampleSizeForAverage);
+                var endAccelerationLength = GetAccelerationEndIndex(RawYAvg, SampleSizeForAverage);
+                RawAxes = GetAxes(endAccelerationLength+1, X, ySource);
+                TrendAxes = GetTrend(endAccelerationLength,X, ySource);
+                TrendY = TrendAxes.Select(pairs => pairs.Value).ToArray();
             }
             get
             {
                 return _source;
             }
         }
+
+        //returns the average millisecond interval from the trend curve data
+        public double AverageIntervalTimeFromTrend
+        {
+            get
+            {
+                //get average interval length
+                double[] intervalY = GetYIntervalArray(TrendY);
+                double trendIntervalAverage = intervalY.Average();
+                return trendIntervalAverage;
+            }
+        }
+
+        //in micro seconds
+        public double DurationOfTrend
+        {
+            get
+            {
+                return TrendY[TrendY.Length-1];
+            }
+        }
+
+        //in micro seconds
+        public double LengthOfTrend
+        {
+            get
+            {
+                return TrendY.Length;
+            }
+        }
+
+        // private ---------------------------------------------------
 
         private double[] GetYIntervalAverage(double[] y, int sampleSize)
         {
@@ -108,7 +129,7 @@ namespace PunchBot.Core
         }
 
 
-        public KeyValuePair<double, double>[] GetTrendInfo(int length, Double[] x, Double[] y)
+        private KeyValuePair<double, double>[] GetTrend(int length, Double[] x, Double[] y)
         {
             var xl = new Microsoft.Office.Interop.Excel.Application();
             var wsf = xl.WorksheetFunction;
@@ -140,15 +161,8 @@ namespace PunchBot.Core
             return trend;
         }
 
-        //Development helper
-        public static string LoadSampleData(string path)
-        {
-            string fileText = System.IO.File.ReadAllText(path);
 
-            return fileText; 
-        }
-
-        public int GetAccelerationEndIndex(double[] array, int sampleSize)
+        private int GetAccelerationEndIndex(double[] array, int sampleSize)
         {
             var min = Convert.ToDouble(array.Min());
             var index = Array.IndexOf(array, min);
@@ -157,7 +171,6 @@ namespace PunchBot.Core
 
         }
 
-        // private ---------------------------------------------------
 
         //a list of the time differences between each data sample
         private static Double[] GetYIntervalArray(Double[] y)
@@ -172,7 +185,7 @@ namespace PunchBot.Core
             return array;
         }
 
-        public KeyValuePair<double, double>[] GetAverageAxes(double[] y, int AverageSampleSize)
+        private KeyValuePair<double, double>[] GetAverageAxes(double[] y, int AverageSampleSize)
         {
             KeyValuePair<double, double>[] avgAxes = new KeyValuePair<double, double>[y.Length];
 
@@ -189,17 +202,17 @@ namespace PunchBot.Core
         }
 
         //trimmed to acceleration end
-        public KeyValuePair<double, double>[] GetAxesAverageTrimmed(KeyValuePair<double, double>[] axesAvg, int length, int AverageSampleSize)
-        {
-            KeyValuePair<double, double>[] subArray = new KeyValuePair<double, double>[length];
+        //public KeyValuePair<double, double>[] GetAxesAverageTrimmed(KeyValuePair<double, double>[] axesAvg, int length, int AverageSampleSize)
+        //{
+        //    KeyValuePair<double, double>[] subArray = new KeyValuePair<double, double>[length];
 
-            for (int i = 0; i < length; i++)
-            {
-                subArray[i] = axesAvg.ElementAt(i);
-            }
+        //    for (int i = 0; i < length; i++)
+        //    {
+        //        subArray[i] = axesAvg.ElementAt(i);
+        //    }
 
-            return subArray;
-        }
+        //    return subArray;
+        //}
 
         private Double[] GetXArray(Double[] yData, Double startNumber = 1)
         {
@@ -211,6 +224,15 @@ namespace PunchBot.Core
             }
 
             return xData;
+        }
+
+
+        //Development helper
+        public static string LoadSampleData(string path)
+        {
+            string fileText = System.IO.File.ReadAllText(path);
+
+            return fileText;
         }
 
     }

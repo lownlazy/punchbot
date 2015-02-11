@@ -33,7 +33,7 @@ namespace Capture
             InitializeComponent();
 
             _data = new Data();
-            data = Data.LoadSampleData(@"C:\Users\Russell\Source\Repos\punchbot\Assets\hit1.txt");
+            //data = Data.LoadSampleData(@"C:\Users\Russell\Source\Repos\punchbot\Assets\hit2.txt");
            
         }
 
@@ -45,15 +45,23 @@ namespace Capture
                 
              _data.Source = value;
 
-            DrawLine(_data.AxesSource, "source");
-            DrawLine(_data.Trend, "trend");
+            //DrawLine(_data.TrendAxes, "trend");
             //DrawLine(_data.AxesAveragedTrimmed, "average");
 
-            //Calculator core = new Calculator();
-            //score.Content = core.GetTorque(data.Y).ToString();
-          
-            //string[] x = core.diffList.Select(n => n.ToString()).ToArray();
-            UserData.Text = _data.Source; //string.Join(",", x); //value;
+            Calculator calculator = new Calculator(_data);
+            var text = "Duration: " + calculator.Duration.ToString("0.0000") + "sec.\n";
+            text += "Work: " + calculator.Work.ToString("0.00") + "r/s\n";
+            text += "Acc: " + calculator.Acceleration.ToString("0.00") + "r/s/s\n";
+            text += "Torque: " + calculator.Torque.ToString("0.00") + "Nm\n";
+            //text += "Power: " + calculator.Power.ToString("0.00") + "\n";
+            text += "Watts: " + calculator.Watts.ToString("0.00000") + "\n";
+            UserData.Text = text;
+
+            score.Content = (calculator.Watts * 100).ToString("0.00");
+
+            DrawLine(_data.RawAxes);
+       
+            //UserData.Text = _data.Source; //string.Join(",", x); //value;
 
                 //check for irrelivant data, usually caused by the head being bumped or is return bounce
                 //if (data.ElementAt(5).Value > 40000)
@@ -82,8 +90,8 @@ namespace Capture
 
         private void DrawLine(KeyValuePair<Double, Double>[] source, string title = "")
         {
-           // if (series == null)
-            //{
+            if (series == null)
+            {
                 series = new LineSeries();
                 series.DependentValuePath = "Value";
                 series.IndependentValuePath = "Key";
@@ -91,7 +99,7 @@ namespace Capture
 
        
                 Main.lineChart.Series.Add(series);
-            //}
+            }
            
                 if (title == "")
                 {

@@ -2,11 +2,11 @@
 <SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="Capture.Properties" GeneratedClassName="Settings">
   <Profiles />
   <Settings>
-    <Setting Name="Com" Type="System.String" Scope="User">
-      <Value Profile="(Default)">COM4</Value>
-    </Setting>
     <Setting Name="Baud" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">9600</Value>
+      <Value Profile="(Default)">57600</Value>
+    </Setting>
+    <Setting Name="Com" Type="System.String" Scope="User">
+      <Value Profile="(Default)">COM3</Value>
     </Setting>
   </Settings>
 </SettingsFile>

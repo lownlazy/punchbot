@@ -16,8 +16,8 @@ namespace Capture
         {
             InitializeComponent();
 
-            string comPort = Properties.Settings.Default.Com;
-            int baud = Properties.Settings.Default.Baud;
+            string comPort = "COM3"; //Properties.Settings.Default.Com;
+            int baud = 9600; //Properties.Settings.Default.Baud;
 
             initSerialRead(comPort, baud);
 
@@ -78,6 +78,8 @@ namespace Capture
             addInput();
         }
 
+        private int count = 0;
+
         private void SerialDataHandler(object sender, SerialDataReceivedEventArgs e)
         {
             String comData = Serial.ReadLine();
@@ -88,6 +90,7 @@ namespace Capture
                  {
                      SerialStream = "";
                      BroadcastData("reset", false);
+                     count = 0;
                  }
                  else if (comData.IndexOf("end") > -1)
                 {
@@ -95,7 +98,8 @@ namespace Capture
                 }
                 else
                 {
-                    SerialStream += comData + "\n";   
+                    SerialStream += comData + "\n";
+                    count++;
                 }
           }));
 

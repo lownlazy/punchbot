@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             mc:Ignorable="d" Margin="5,5,5,5" Width="140"
+             mc:Ignorable="d" Margin="5,5,5,5" Width="140" Height="162"
             >
 
     <Grid >
@@ -19,11 +19,11 @@
         </StackPanel>
 
         <StackPanel Grid.Row="1" Orientation="Horizontal"  >
-            <TextBox x:Name="UserData" HorizontalAlignment="Left" Height="62" TextWrapping="Wrap" VerticalAlignment="Top" Width="140"/>
+            <TextBox x:Name="UserData" HorizontalAlignment="Left" Height="103" TextWrapping="Wrap" VerticalAlignment="Top" Width="140" Margin="0,0,0,-37.4" FontSize="11"/>
         </StackPanel>
 
-        <StackPanel Grid.Row="2" Orientation="Horizontal"  >
-            <Label x:Name="score" Height="62" Width="57" Content="" FontSize="16" />
+        <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,24,-0.2,-24"  >
+            <Label x:Name="score" Width="136" Content="" FontSize="16" Margin="0,17,0,-17" FontWeight="Bold" />
         </StackPanel>
     </Grid>
 
