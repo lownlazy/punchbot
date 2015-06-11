@@ -1,0 +1,30 @@
+﻿@model Pager
+
+<div class="pagination">
+    <ul>
+        @if (Model.IsFirstPage == false)
+        {
+            <li><a href="?page=@(Model.CurrentPage - 1)">&lt;</a></li>
+        }
+
+        @foreach (var number in Model.Pages)
+        {
+            var distanceFromCurrent = number - Model.CurrentPage;
+
+            if (number == Model.CurrentPage)
+            {
+                <li><span class="active">@number</span></li>
+            }
+
+            else if ((distanceFromCurrent > -10) && (distanceFromCurrent < 10))
+            {
+                <li><a href="?page=@number">@number</a></li>
+            }
+        }
+
+        @if (Model.IsLastPage == false)
+        {
+            <li><a href="?page=@(Model.CurrentPage + 1)">&gt;</a></li>
+        }
+    </ul>
+</div>

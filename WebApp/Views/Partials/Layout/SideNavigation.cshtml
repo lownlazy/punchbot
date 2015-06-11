@@ -1,0 +1,53 @@
+﻿@using umbraco.NodeFactory;
+@model Umbraco.Web.Models.RenderModel
+@{
+    var content = Model.Content;
+    IPublishedContent parent = content.AncestorOrSelf(2);
+}
+
+<nav class="sub-nav">
+    <ul>
+        @{
+
+            <li class="@parent.IsAncestorOrSelf(Model.Content, "active", "")">
+                <a href="@parent.Url">@parent.Name</a>
+                <ul>
+                    @{
+                        IEnumerable<IPublishedContent> children = content.AncestorOrSelf(2).Children.Where(x => x.IsVisible());
+
+                        foreach (IPublishedContent child in children)
+                        {
+                            bool isActiveLink = child.IsAncestorOrSelf(Model.Content);
+
+                            var hasChildrenString = (child.Children.Count() > 0) ? "has-children" : "";
+
+                            <li class="@(isActiveLink? "active" : "") @hasChildrenString">
+                                <a href="@child.Url">@child.Name</a>
+
+                                @if (isActiveLink)
+                                {
+                                    @renderSubChildren(child);
+                                }
+                            </li>
+                        }
+                    }
+                </ul>
+            </li>
+        }
+    </ul>
+</nav>
+
+@helper renderSubChildren(IPublishedContent child)
+{
+    IEnumerable<IPublishedContent> subChildren = child.Children.Where(x => x.IsVisible());
+
+    if (subChildren.Count() > 0)
+    {
+        <ul>
+            @foreach (IPublishedContent subChild in subChildren)
+            {
+                <li class="@subChild.IsAncestorOrSelf(Model.Content, "active", "")"><a href="@subChild.Url">@subChild.Name</a></li>
+            }
+        </ul>
+    }
+}
