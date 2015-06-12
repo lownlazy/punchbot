@@ -1,9 +1,0 @@
-﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<Umbraco.Web.Models.RenderModel>
-<nav class="main">
-    <ul class="topnavigation">
-        @foreach (var c in Model.Content.AncestorOrSelf(1).Children.Where("umbracoNaviHide!=true"))
-        {
-            <li><a href="@c.Url">@c.Name</a></li>
-        }
-    </ul>
-</nav>
