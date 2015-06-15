@@ -2754,7 +2754,6 @@
     <Content Include="Views\Web.config" />
     <Content Include="Config\uSyncSettings.config" />
     <Content Include="packages.config" />
-    <None Include="Properties\PublishProfiles\pbdev1.pubxml" />
     <Content Include="uSync\DataTypeDefinition\Approved Color.config" />
     <Content Include="uSync\DataTypeDefinition\Checkbox list.config" />
     <Content Include="uSync\DataTypeDefinition\Content Picker.config" />
@@ -2813,6 +2812,7 @@
     <Folder Include="App_Code\" />
     <Folder Include="macroScripts\" />
     <Folder Include="Masterpages\" />
+    <Folder Include="Properties\PublishProfiles\" />
     <Folder Include="UserControls\" />
     <Folder Include="Views\MacroPartials\" />
   </ItemGroup>
