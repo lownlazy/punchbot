@@ -1,4 +1,4 @@
-@inherits Umbraco.Web.Mvc.UmbracoTemplatePage
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage
 @{ 
     var home = CurrentPage.Site();
 }
@@ -9,9 +9,10 @@
     foreach (var childPage in home.Children.Where("Visible"))
     {   
         <div class="col-xs-6 col-sm-3">
+			<strong>@childPage.Name</strong>
             @if (childPage.Children.Where("Visible").Any())
             {                    
-                <strong>@childPage.Name</strong>
+                
                 @childPages(childPage.Children)
             }
         </div>

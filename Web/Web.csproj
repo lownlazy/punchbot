@@ -583,6 +583,7 @@
     <Content Include="Umbraco\Images\Umbraco\userGroup.gif" />
     <Content Include="Umbraco\Images\Umbraco\userType.gif" />
     <Content Include="Umbraco\installer.html" />
+    <Content Include="Umbraco\Install\Legacy\loadStarterKits.ascx" />
     <Content Include="Umbraco\Js\app.dev.js" />
     <Content Include="Umbraco\Js\app.js" />
     <Content Include="Umbraco\Js\canvasdesigner.config.js" />
@@ -2575,7 +2576,9 @@
     <Content Include="Umbraco_Client\Ui\ui-lightness\images\ui-icons_ffd27a_256x240.png" />
     <Content Include="Umbraco_Client\Ui\ui-lightness\images\ui-icons_ffffff_256x240.png" />
     <Content Include="Umbraco_Client\Ui\ui-lightness\jquery-ui.custom.css" />
-    <Content Include="Web.config" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -2601,7 +2604,9 @@
     <Content Include="Config\scripting.config" />
     <Content Include="Config\tinyMceConfig.config" />
     <Content Include="Config\trees.config" />
-    <Content Include="Config\umbracoSettings.config" />
+    <Content Include="Config\umbracoSettings.config">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Config\UrlRewriting.config" />
     <Content Include="Umbraco\assets\fonts\helveticons\helveticons.eot" />
     <Content Include="Umbraco\assets\fonts\helveticons\helveticons.ttf" />
@@ -2800,6 +2805,14 @@
     <Content Include="uSync\Template\Master\Home\Home.config" />
     <Content Include="uSync\Template\Master\Master.config" />
     <Content Include="uSync\Template\Master\TextPage\TextPage.config" />
+    <Content Include="Umbraco\Install\Views\Index.cshtml" />
+    <Content Include="Umbraco\Install\Views\Web.config" />
+    <Content Include="uSync\DataTypeDefinition\Gender.config" />
+    <None Include="Properties\PublishProfiles\pbdev1 %283%29.pubxml" />
+    <Content Include="uSync\Template\Strikes1\Strikes1.config" />
+    <Content Include="uSync\Template\Strike\Strike.config" />
+    <Content Include="Views\Strike.cshtml" />
+    <Content Include="Views\Strikes1.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -2812,8 +2825,8 @@
     <Folder Include="App_Code\" />
     <Folder Include="macroScripts\" />
     <Folder Include="Masterpages\" />
-    <Folder Include="Properties\PublishProfiles\" />
     <Folder Include="UserControls\" />
+    <Folder Include="uSync\Template\Strikes\" />
     <Folder Include="Views\MacroPartials\" />
   </ItemGroup>
   <PropertyGroup>

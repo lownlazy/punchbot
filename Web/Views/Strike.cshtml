@@ -1,0 +1,13 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage
+@{
+    Layout = "Master.cshtml";
+    IHtmlString idStr = Umbraco.Field("member");
+    int id = Int32.Parse(idStr.ToString());
+    var memHelper = new Umbraco.Web.Security.MembershipHelper(UmbracoContext.Current);
+    var member = memHelper.GetById(id);
+}
+
+<div role="content">
+    member: @member.Name<br />
+    data: @Umbraco.Field("data")
+</div>
