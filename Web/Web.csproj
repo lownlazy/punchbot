@@ -2808,11 +2808,15 @@
     <Content Include="Umbraco\Install\Views\Index.cshtml" />
     <Content Include="Umbraco\Install\Views\Web.config" />
     <Content Include="uSync\DataTypeDefinition\Gender.config" />
-    <None Include="Properties\PublishProfiles\pbdev1 %283%29.pubxml" />
     <Content Include="uSync\Template\Strikes1\Strikes1.config" />
     <Content Include="uSync\Template\Strike\Strike.config" />
     <Content Include="Views\Strike.cshtml" />
     <Content Include="Views\Strikes1.cshtml" />
+    <Content Include="uSync\DocumentType\EventPostRepository\def.config" />
+    <Content Include="uSync\DocumentType\EventPost\def.config" />
+    <Content Include="uSync\DocumentType\Events\def.config" />
+    <Content Include="uSync\DocumentType\Strikes\def.config" />
+    <Content Include="uSync\DocumentType\Strikes\Strike\def.config" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -2826,6 +2830,7 @@
     <Folder Include="macroScripts\" />
     <Folder Include="Masterpages\" />
     <Folder Include="UserControls\" />
+    <Folder Include="uSync\DocumentType\Strike\" />
     <Folder Include="uSync\Template\Strikes\" />
     <Folder Include="Views\MacroPartials\" />
   </ItemGroup>
